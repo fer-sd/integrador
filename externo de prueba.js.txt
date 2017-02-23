@@ -1,0 +1,30 @@
+
+function elementoExterno(prov,serv,est){
+	function init(){
+		integrador.interactionRequest(onChange,this_elementoExterno);
+	}
+	
+	this.proveedor = prov;
+	this.servicio = serv;
+	this.estado = est;
+	var this_elementoExterno = this;
+	
+	this.cambiaEstado = function(arg){
+		this.estado = arg;
+		
+	}
+	this.sacaEstado = function(){
+		return this.estado;
+	}
+	function onChange(data){
+		console.log("Estoy en elem");
+		//console.log(data);
+	}
+	init();
+	
+}
+
+var elem1 = new elementoExterno("inbenta","chat","iniciando");
+var elem2 = new elementoExterno("inbenta","microasistente","esperando");
+var elem3 = new elementoExterno("CSI","encuesta","abriendo");
+var elem4 = new elementoExterno("pollito","pio","piando");
