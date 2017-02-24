@@ -4,22 +4,61 @@ Clase UIElement - Integrador
 function UIElement(){ 
 	//Variables privadas
 
+	//Objeto instanciado
+	var object;
+	//Propietario del elemento 
+	var owner;
 	//ID elemento 
 	var id;
 	//Tipo de elemento
 	var type={chat, modal};
-	//Propietario del elemento 
-	var owner;
 	//Servicio del propietario sobre el que se va a actuar
 	var service;
-	//Array de posibles estados
-	var status= [];
 	//Estado actual
 	var currentStatus;
-	//Estados propios
+	//Array de posibles estados
+	var status= [];
+	//Función con las acciones asociadas a cada estado del UIElement
+	//Depende de status[]
+	var actions = function(csi_status,csi){
+		switch(csi_status) {
+	    	case "modalEncuestaLanzado": //status[0]
+		        console.log('Modal encuesta lanzado - Version encuesta CSI: '+csi.getVersion());
+		        currentStatus = csi_status;
+		        break;
+	    	case "modalEncuestaCerrado": //status[1]
+		        console.log('Modal encuesta cerrado - Version encuesta CSI: '+csi.getVersion());
+		        currentStatus = csi_status;
+		        break;
+	    	case "modalInicialLanzado": //status[2]
+		        console.log('Modal inicial lanzado - Version encuesta CSI: '+csi.getVersion());
+		        currentStatus = csi_status;
+		        break;
+	    	case "modalInicialCerrado": //status[3]
+		        console.log('Modal inicial cerrado - Version encuesta CSI: '+csi.getVersion());
+		        currentStatus = csi_status;
+		        break;
+	    	case "modalMinimizadoLanzado": //status[4]
+		        console.log('Modal minimizado lanzado - Version encuesta CSI: '+csi.getVersion());
+		        currentStatus = csi_status;
+		        break;
+	    	case "modalMinimizadoCerrado": //status[5]
+		        console.log('Modal minimizado cerrado - Version encuesta CSI: '+csi.getVersion());
+		        currentStatus = csi_status;
+		        break;
+	    	default:
+	    		currentStatus = csi_status;
+	        	console.log('Version encuesta CSI: '+csi.getVersion());
+		}
+	//Array de posibles estados propios. 
+	//"on" -> suscrito. 
+	//"off"->no suscrito. 
+	//"error" -> se produjo algún error en la suscripción
 	var internalStatus= ["on","off","error"];
-	//Estado interno actual. Por defecto desactivado
+	//Estado interno actual. Por defecto desactivado. Cambia según resultado de la suscripción
 	var currentInternalStatus = "off";
+	
+	};
 	
 	//Métodos públicos
 
@@ -63,40 +102,9 @@ function UIElement(){
 	this.setCurrentInternalStatus = function(status){
 		currentInternalStatus = this.status;
 	}
-
-	/*
-	* Método público Enable específico para piloto de CSI
-	* @param object: objeto ya instanciado
-	*/
-	this.enable = function(object){ 
-		//suscripción a eventos
-		if (object !== undefined){
-			object.onStateCsiChange(function(current_status,csi){
-				switch(current_status) {
-			    	case "modalEncuestaLanzado":
-				        console.log('Modal encuesta lanzado - Version encuesta CSI: '+csi.getVersion());
-				        break;
-			    	case "modalEncuestaCerrado":
-				        console.log('Modal encuesta cerrado - Version encuesta CSI: '+csi.getVersion());
-				        break;
-			    	case "modalInicialLanzado":
-				        console.log('Modal inicial lanzado - Version encuesta CSI: '+csi.getVersion());
-				        break;
-			    	case "modalInicialCerrado":
-				        console.log('Modal inicial cerrado - Version encuesta CSI: '+csi.getVersion());
-				        break;
-			    	case "modalMinimizadoLanzado":
-				        console.log('Modal minimizado lanzado - Version encuesta CSI: '+csi.getVersion());
-				        break;
-			    	case "modalMinimizadoCerrado":
-				        console.log('Modal minimizado cerrado - Version encuesta CSI: '+csi.getVersion());
-				        break;
-			    	default:
-			        	console.log('Version encuesta CSI: '+csi.getVersion());
-				}
-			});
-		}
-	} 
+	this.getActions = function(){
+		return actions;
+	}
 	/*
 	* Método público Disable específico para piloto de CSI
 	*/
@@ -104,3 +112,5 @@ function UIElement(){
 
 	} 
 } 
+
+var encuesta = new uiElement();
