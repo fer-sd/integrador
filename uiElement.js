@@ -6,7 +6,7 @@ function UIElement(){
 	/***** PARTE PRIVADA ******/
 
 	/***** Variables privadas ******/
-	
+
 	//Objeto instanciado
 	var object;
 	//Propietario del elemento 
@@ -20,31 +20,32 @@ function UIElement(){
 	//Estado actual
 	var currentStatus;
 	//Array de posibles estados
-	var status= [];
-	//Función con las acciones asociadas a cada estado del UIElement. Depende de status[]
+	var status= ["modalEncuestaLanzado", "modalEncuestaCerrado", "modalInicialLanzado", "modalInicialCerrado", "modalMinimizadoLanzado", "modalMinimizadoCerrado"];
+	//Función con las acciones asociadas a cada estado del UIElement. 
+	//Este swicth se pasará finalmente como parámetro, y será generado en un módulo aparte (actionsGenerator)
 	var actions = function(csi_status,csi){
 		switch(csi_status) {
-	    	case "modalEncuestaLanzado": //status[0]
+	    	case status[0]: //status[0]
 		        console.log('Modal encuesta lanzado - Version encuesta CSI: '+csi.getVersion());
 		        currentStatus = csi_status;
 		        break;
-	    	case "modalEncuestaCerrado": //status[1]
+	    	case status[1]: //status[1]
 		        console.log('Modal encuesta cerrado - Version encuesta CSI: '+csi.getVersion());
 		        currentStatus = csi_status;
 		        break;
-	    	case "modalInicialLanzado": //status[2]
+	    	case status[2]: //status[2]
 		        console.log('Modal inicial lanzado - Version encuesta CSI: '+csi.getVersion());
 		        currentStatus = csi_status;
 		        break;
-	    	case "modalInicialCerrado": //status[3]
+	    	case status[3]: //status[3]
 		        console.log('Modal inicial cerrado - Version encuesta CSI: '+csi.getVersion());
 		        currentStatus = csi_status;
 		        break;
-	    	case "modalMinimizadoLanzado": //status[4]
+	    	case status[4]: //status[4]
 		        console.log('Modal minimizado lanzado - Version encuesta CSI: '+csi.getVersion());
 		        currentStatus = csi_status;
 		        break;
-	    	case "modalMinimizadoCerrado": //status[5]
+	    	case status[5]: //status[5]
 		        console.log('Modal minimizado cerrado - Version encuesta CSI: '+csi.getVersion());
 		        currentStatus = csi_status;
 		        break;
@@ -70,8 +71,9 @@ function UIElement(){
 	this.getId = function(){
 		return id;
 	}
-	this.setId = function(id){
-		id = this.id;
+	this.setId = function(owner,service){
+		//se concatena propietario y servicio
+		id = this.owner+'-'+this.service;
 	}
 	this.getType = function(){
 		return type;
