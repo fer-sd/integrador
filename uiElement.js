@@ -30,6 +30,9 @@ function uiElement(object){
 		        break;
 		    case myStatus[1]:
 		        console.log('Modal encuesta lanzado - Version encuesta CSI: '+csi.getVersion());
+		        $('.usabilla_live_button_container').css('display','none');
+		        console.log('Moquillo encuesta Usabilla cerrado por Integrador');
+		        setTimeout(function(){csi.cerrarModalEncuesta();console.log('Modal encuesta cerrado por Integrador');}, 5000);
 		        //Notificar cambio de estado a uiElement
 		        break;
 	    	case myStatus[2]:
@@ -38,7 +41,7 @@ function uiElement(object){
 		        break;
 	    	case myStatus[3]:
 		        console.log('Modal inicial lanzado - Version encuesta CSI: '+csi.getVersion());
-	    		setTimeout(function(){csi.cerrarModalInicial();console.log('Modal inicial cerrado por Integrador');}, 3000);
+	    		setTimeout(function(){csi.cerrarModalInicial();console.log('Modal inicial cerrado por Integrador');}, 5000);
 		        //Notificar cambio de estado a uiElement
 		        break;
 	    	case myStatus[4]:

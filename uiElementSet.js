@@ -21,7 +21,7 @@ function uiElementSet(){
 
 	/**
 	* Método para extraer un uiElement pasado como parámetro
-	* @param id: String con el id del uiElement que se desea obtener (proveedor-servicio)
+	* @param id: id del uiElement que se desea obtener (proveedor-servicio)
 	* @return: si existe, devuelve el uiElement. Si no, devuelve false
 	*/
 	this.getUiElement = function(id){
@@ -34,16 +34,14 @@ function uiElementSet(){
 	}
 
 	/**
-	* Método para insertar un uiElement (objeto) pasado como parámetro en el uiElementSet
-    * @param object: objeto asociado al uiElement instanciado
+	* Método para insertar un uiElement pasado como parámetro en el uiElementSet
+    * @param uiElement: uiElement asociado al objecto instanciado
 	*/
-	this.setUiElement = function(object){
+	this.setUiElement = function(uiElement){
 		 //Comprueba que el objeto existe en el DOM
-		 if ((typeof(object)!=null) || (typeof(object)!=undefined)){
-			 //Añadir elemento al set
-			uiElements.push(object);
-			//Ejecutar suscripción
-			//suscriptionRequest(object,suscriptionFunction,actionsFunction);
+		 if ((typeof(uiElement)!=null) || (typeof(uiElement)!=undefined)){
+			 //Añadir uiElement al set
+			uiElements.push(uiElement);
 		}
 	}
 
@@ -76,14 +74,12 @@ function uiElementSet(){
     * @param suscriptionFunction: String con el nombre de la función de suscripción
     */
     this.suscriptionRequest = function(object,suscriptionFunction){
+    	//Convertir String a tipo objeto
+    	var myObject = window[object];
 
-    	var myClass = window[object].constructor.name;
-    	var myObject = new window[myClass];
-
-    	if (typeof(encuestaCSI)=="object") {
+    	if (typeof(myObject)=="object") {
 	    	//Instanciación del uiElement
-	    	
-	    	var myUiElement = new uiElement(encuestaCSI);
+	    	var myUiElement = new uiElement(myObject);
 	    	//Insertar el uiElement en el set
 	    	this.setUiElement(myUiElement);
     	}
@@ -94,7 +90,7 @@ function uiElementSet(){
     	
 		//Comprueba que el objeto existe yla función de suscripción existe en la clase asociada al objeto
         if (typeof(eval(mySuscriptionFunction))=="function"){
-	       var mySuscriptionToken = object+'.'+suscriptionFunction+'('+myActionsFunction+')';
+	       var mySuscriptionToken = mySuscriptionFunction+'('+myActionsFunction+')';
 	       //Ejecuta la suscripción pasando como parámetro la función de acciones
 	       eval(mySuscriptionToken);
 	       return true;

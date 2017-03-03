@@ -271,6 +271,9 @@ function EncuestaCSI(){
 			if(csiDebug && csiDebug.isOn()){
 				console.log("Cerrar Modal Encuesta");
 			}
+
+			//Cierra Modal Inicial
+			$('#mv_modal_background').remove();
 			
 			//Actualizar cookies
 			setCookieValue(idCookieUltima, (new Date()).getTime(), expCookie);
