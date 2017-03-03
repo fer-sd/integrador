@@ -13,13 +13,20 @@ function uiElementSet(){
 
 	/***** Métodos privados ******/
 
+	/***** PARTE PÚBLICA ******/
+
+	/***** Variables públicas ******/
+
+	/***** Métodos públicos ******/
+
 	/**
 	* Método para extraer un uiElement pasado como parámetro
 	* @param id: id del uiElement que se desea obtener (proveedor-servicio)
 	* @return: si existe, devuelve el uiElement. Si no, devuelve false
 	*/
-	function getUiElement(id){
+	this.getUiElement = function(id){
 		for (c=0 ; c<uiElements.length; c++){
+			console.log(uiElements[c].getId());
             if (uiElements[c].getId() == id)
             	return uiElements[c];
         }
@@ -30,7 +37,7 @@ function uiElementSet(){
 	* Método para insertar un uiElement (objeto) pasado como parámetro en el uiElementSet
     * @param object: objeto asociado al uiElement instanciado
 	*/
-	function setUiElement(object){
+	this.setUiElement = function(object){
 		 //Comprueba que el objeto existe en el DOM
 		 if ((typeof(object)!=null) || (typeof(object)!=undefined)){
 			 //Añadir elemento al set
@@ -45,7 +52,7 @@ function uiElementSet(){
 	* @param id: id del uiElement que se desea eliminar
 	* @return: si existe, devuelve True y elimina el uiElement. Si no se encuentra, devuelve false
 	*/
-    function delUiElement(id){
+    this.removeUiElement = function(id){
     	for (c=0 ; c<uiElements.length; c++){
             if (uiElements[c].getId() == id){
             	uiElements.splice(c, 1);
@@ -58,37 +65,45 @@ function uiElementSet(){
 	/**
 	Devuelve el número de uiElements que contiene el uiElementSet
 	*/
-	function uiElementSetSize(){
+	this.getUiElementSetSize = function(){
 		return uiElements.length;
 	}
 
 
 	/**
     * Método que debe invocar cualquier elemento que quiera interactuar             
-    * @param object: String con el nombre del objeto asociado al uiElement instanciado
+    * @param object: objeto asociado al uiElement instanciado
     * @param suscriptionFunction: String con el nombre de la función de suscripción
-    * @param actionsFunction: Función con el comportamiento/acciones del elemento al que se suscribe
     */
-    function suscriptionRequest(object,suscriptionFunction,actionsFunction){
-	
-		var mySuscriptionFunction = object+'.'+suscriptionFunction;
-			//Comprueba que la función de suscripción existe en la clase asociada al objeto
-		       if ((typeof(eval(mySuscriptionFunction))=="function")){
-			       var mySuscriptionToken = object+'.'+suscriptionFunction+'('+actionsFunction+')';
-			       //Ejecuta la suscripción pasando como parámetro la función de acciones
-			       eval(mySuscriptionToken);
-			}
-			else{
-			//Registrar errores
-			}	
+    this.suscriptionRequest = function(object,suscriptionFunction){
+
+    	var myClass = window[object].constructor.name;
+    	var myObject = new window[myClass];
+
+    	if (typeof(encuestaCSI)=="object") {
+	    	//Instanciación del uiElement
+	    	
+	    	var myUiElement = new uiElement(encuestaCSI);
+	    	//Insertar el uiElement en el set
+	    	this.setUiElement(myUiElement);
+    	}
+    	else return false;
+    	
+    	var mySuscriptionFunction = object+'.'+suscriptionFunction;
+    	var myActionsFunction = myUiElement.getActions();
+    	
+		//Comprueba que el objeto existe yla función de suscripción existe en la clase asociada al objeto
+        if (typeof(eval(mySuscriptionFunction))=="function"){
+	       var mySuscriptionToken = object+'.'+suscriptionFunction+'('+myActionsFunction+')';
+	       //Ejecuta la suscripción pasando como parámetro la función de acciones
+	       eval(mySuscriptionToken);
+	       return true;
+		}
+		else{
+			return false;
+		//Registrar errores
+		}	
 	}
-
-
-	/***** PARTE PÚBLICA ******/
-
-	/***** Variables públicas ******/
-
-	/***** Métodos públicos ******/
 
 }
 

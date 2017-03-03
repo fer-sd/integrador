@@ -2,58 +2,64 @@
 Clase UIElement - Integrador
 */
 
-function UIElement(){ 
+function uiElement(object){ 
 	/***** PARTE PRIVADA ******/
 
 	/***** Variables privadas ******/
-
-	//Objeto instanciado
-	var object;
 	//Propietario del elemento 
-	var owner;
-	//ID elemento 
-	var id;
-	//Tipo de elemento
-	var type={chat, modal};
+	var owner = object.owner;
 	//Servicio del propietario sobre el que se va a actuar
-	var service;
+	var service = object.service;
+	//ID elemento 
+	var id = object.owner+'-'+object.service;
+	//Tipo de elemento
+	var type="encuesta";
 	//Estado actual
-	var currentStatus;
+	var currentStatus = object.status;
 	//Array de posibles estados
-	var status= ["modalEncuestaLanzado", "modalEncuestaCerrado", "modalInicialLanzado", "modalInicialCerrado", "modalMinimizadoLanzado", "modalMinimizadoCerrado"];
+	var status= object.statusSet; 
+	
 	//Función con las acciones asociadas a cada estado del UIElement. 
 	//Este swicth se pasará finalmente como parámetro, y será generado en un módulo aparte (actionsGenerator)
 	var actions = function(csi_status,csi){
+		var myStatus = csi.getStatusSet();
 		switch(csi_status) {
-	    	case status[0]: //status[0]
+	    	case myStatus[0]:
+		        console.log('Encuesta creada - Version encuesta CSI: '+csi.getVersion());
+		        //Notificar cambio de estado a uiElement
+		        break;
+		    case myStatus[1]:
 		        console.log('Modal encuesta lanzado - Version encuesta CSI: '+csi.getVersion());
-		        currentStatus = csi_status;
+		        //Notificar cambio de estado a uiElement
 		        break;
-	    	case status[1]: //status[1]
+	    	case myStatus[2]:
 		        console.log('Modal encuesta cerrado - Version encuesta CSI: '+csi.getVersion());
-		        currentStatus = csi_status;
+		        //Notificar cambio de estado a uiElement
 		        break;
-	    	case status[2]: //status[2]
+	    	case myStatus[3]:
 		        console.log('Modal inicial lanzado - Version encuesta CSI: '+csi.getVersion());
-		        currentStatus = csi_status;
+	    		setTimeout(function(){csi.cerrarModalInicial()}, 3000);
+	    		console.log('Modal inicial cerrado por Integrador');
+		        //Notificar cambio de estado a uiElement
 		        break;
-	    	case status[3]: //status[3]
+	    	case myStatus[4]:
 		        console.log('Modal inicial cerrado - Version encuesta CSI: '+csi.getVersion());
-		        currentStatus = csi_status;
+		        //Notificar cambio de estado a uiElement
 		        break;
-	    	case status[4]: //status[4]
+	    	case myStatus[5]:
 		        console.log('Modal minimizado lanzado - Version encuesta CSI: '+csi.getVersion());
-		        currentStatus = csi_status;
+		        //Notificar cambio de estado a uiElement
 		        break;
-	    	case status[5]: //status[5]
+	    	case myStatus[6]:
 		        console.log('Modal minimizado cerrado - Version encuesta CSI: '+csi.getVersion());
-		        currentStatus = csi_status;
+		        //Notificar cambio de estado a uiElement
 		        break;
 	    	default:
-	    		currentStatus = csi_status;
 	        	console.log('Version encuesta CSI: '+csi.getVersion());
+	        	//Notificar cambio de estado a uiElement
 		}
 	}
+	
 	//Array de posibles estados propios. "on" -> suscrito. "off"->no suscrito. "error" -> se produjo algún error en la suscripción
 	var internalStatus= ["on","off","error"];
 	//Estado interno actual. Por defecto desactivado. Cambia según resultado de la suscripción. Depende de internalStatus[]
@@ -71,7 +77,7 @@ function UIElement(){
 	this.getId = function(){
 		return id;
 	}
-	this.setId = function(owner,service){
+	this.setId = function(){
 		//se concatena propietario y servicio
 		id = this.owner+'-'+this.service;
 	}
@@ -93,6 +99,9 @@ function UIElement(){
 	this.setService = function(service){
 		service = this.service;
 	}
+	this.getStatus = function(){
+		return status;
+	}
 	this.setStatus = function(status){
 		status = this.status;
 	}
@@ -112,7 +121,5 @@ function UIElement(){
 	this.getActions = function(){
 		return actions;
 	}
-};
 
-//Constructor
-var encuesta = new uiElement();
+};

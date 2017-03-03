@@ -41,9 +41,13 @@ function EncuestaCSI(){
 	var delayObligaciones = 15000;					//Tiempo de espera para lanzar la encuesta si se determina que es por obligación
 	var normalDelay = 2000;							//Tiempo de espera hasta lanzar la encuesta (si aplica)							//
 	var listeners = [];								//Array de suscriptores
+	
+	//Variables públicas para Integrador
+	var owner = "csi";
+	var service = "encuesta";
 	var status = "creada";							//Guarda el estado actual de la encuesta
-	/*posibles valores de status: creada | modalEncuestaLanzado | modalEncuestaCerrado | 
-	modalInicialLanzado | modalInicialCerrado | modalMinimizadoLanzado | modalMinimizadoLanzado */
+	var statusSet = ["creada", "modalEncuestaLanzado", "modalEncuestaCerrado", "modalInicialLanzado", "modalInicialCerrado", 
+	"modalMinimizadoLanzado", "modalMinimizadoCerrado"];
 	
 	//Cookies
 	var idCookieClicks = "CSI_clicks_acum";			//Contador numero de clics acumulados
@@ -189,7 +193,7 @@ function EncuestaCSI(){
 				console.log("Lanzar modal encuesta");
 			}
 			
-			if(isIE8orPrior() || isInIframe()) return false;
+			if(isIE8orPrior() || isInIframe()) return false;;
 					
 			var modal_width = 720;
 			var modal_height = 500;
@@ -844,6 +848,43 @@ function EncuestaCSI(){
 		return version;
 	};
 
+	/**
+	 * Método público para obetener el array de estados posibles
+	 */
+	this.getOwner = function(){
+		return owner;
+	};
+
+	/**
+	 * Método público para obetener el array de estados posibles
+	 */
+	this.getService = function(){
+		return service;
+	};
+
+		/**
+	 * Establece el valor de la variable status y lanza funciones asociadas a el estado recibido como parámetro
+	 * @param new_status. Estado actual del modal de la encuestas CSI
+	*/ 
+	var setStatus = function(new_status){
+		status = new_status;
+		triggerSuscription();
+	}
+	
+	/**
+	 * Devuelve valor de la variable status
+	*/ 
+	this.getStatus = function(){
+		return status;
+	}
+
+	/**
+	* Devuelve array de posibles estados
+	*/ 
+	this.getStatusSet = function(){
+		return statusSet;
+	}
+	
 
 	//PARTE PRIVADA
 
@@ -1148,24 +1189,6 @@ function EncuestaCSI(){
 		}
 	};
 
-	/**
-	 * Establece el valor de la variable status y lanza funciones asociadas a el estado recibido como parámetro
-	 * @param new_status. Estado actual del modal de la encuestas CSI
-	*/ 
-	var setStatus = function(new_status){
-		status = new_status;
-		triggerSuscription();
-	}
-	
-	/**
-	 * Devuelve valor de la variable status
-	*/ 
-	var getStatus = function(){
-		return status;
-	}
-	
-
-	this.getStatus = getStatus;
 	
 	/*******************************************************
 	 * Definición de las reglas de obligación y exclusión
