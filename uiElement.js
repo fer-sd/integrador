@@ -7,17 +7,17 @@ function uiElement(object){
 
 	/***** Variables privadas ******/
 	//Propietario del elemento 
-	var owner = object.owner;
+	var owner = object.getOwner();
 	//Servicio del propietario sobre el que se va a actuar
-	var service = object.service;
+	var service = object.getService();
 	//ID elemento 
-	var id = object.owner+'-'+object.service;
+	var id = object.getOwner()+'-'+object.getService();
 	//Tipo de elemento
 	var type="encuesta";
 	//Estado actual
-	var currentStatus = object.status;
+	var currentStatus = object.getStatus();
 	//Array de posibles estados
-	var status= object.statusSet; 
+	var status= object.getStatusSet(); 
 	
 	//Función con las acciones asociadas a cada estado del UIElement. 
 	//Este swicth se pasará finalmente como parámetro, y será generado en un módulo aparte (actionsGenerator)
@@ -38,8 +38,7 @@ function uiElement(object){
 		        break;
 	    	case myStatus[3]:
 		        console.log('Modal inicial lanzado - Version encuesta CSI: '+csi.getVersion());
-	    		setTimeout(function(){csi.cerrarModalInicial()}, 3000);
-	    		console.log('Modal inicial cerrado por Integrador');
+	    		setTimeout(function(){csi.cerrarModalInicial();console.log('Modal inicial cerrado por Integrador');}, 3000);
 		        //Notificar cambio de estado a uiElement
 		        break;
 	    	case myStatus[4]:

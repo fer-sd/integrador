@@ -21,7 +21,7 @@ function uiElementSet(){
 
 	/**
 	* Método para extraer un uiElement pasado como parámetro
-	* @param id: id del uiElement que se desea obtener (proveedor-servicio)
+	* @param id: String con el id del uiElement que se desea obtener (proveedor-servicio)
 	* @return: si existe, devuelve el uiElement. Si no, devuelve false
 	*/
 	this.getUiElement = function(id){
