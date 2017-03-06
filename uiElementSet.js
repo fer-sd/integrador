@@ -34,14 +34,16 @@ function uiElementSet(){
 	}
 
 	/**
-	* Método para insertar un uiElement pasado como parámetro en el uiElementSet
-    * @param uiElement: uiElement asociado al objecto instanciado
+	* Método para insertar un uiElement (objeto) pasado como parámetro en el uiElementSet
+    * @param object: objeto asociado al uiElement instanciado
 	*/
-	this.setUiElement = function(uiElement){
+	this.setUiElement = function(object){
 		 //Comprueba que el objeto existe en el DOM
-		 if ((typeof(uiElement)!=null) || (typeof(uiElement)!=undefined)){
-			 //Añadir uiElement al set
-			uiElements.push(uiElement);
+		 if ((typeof(object)!=null) || (typeof(object)!=undefined)){
+			 //Añadir elemento al set
+			uiElements.push(object);
+			//Ejecutar suscripción
+			//suscriptionRequest(object,suscriptionFunction,actionsFunction);
 		}
 	}
 
@@ -74,7 +76,7 @@ function uiElementSet(){
     * @param suscriptionFunction: String con el nombre de la función de suscripción
     */
     this.suscriptionRequest = function(object,suscriptionFunction){
-    	//Convertir String a tipo objeto
+
     	var myObject = window[object];
 
     	if (typeof(myObject)=="object") {
@@ -90,7 +92,7 @@ function uiElementSet(){
     	
 		//Comprueba que el objeto existe yla función de suscripción existe en la clase asociada al objeto
         if (typeof(eval(mySuscriptionFunction))=="function"){
-	       var mySuscriptionToken = mySuscriptionFunction+'('+myActionsFunction+')';
+	       var mySuscriptionToken = object+'.'+suscriptionFunction+'('+myActionsFunction+')';
 	       //Ejecuta la suscripción pasando como parámetro la función de acciones
 	       eval(mySuscriptionToken);
 	       return true;
