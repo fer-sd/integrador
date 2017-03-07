@@ -14,6 +14,8 @@ function uiElementSet(){
     // Array con los uiElements instanciados
     var uiElements = [];
 
+    //var rules = new rules();
+
 	/***** Métodos privados ******/
 
 	/***** PARTE PÚBLICA ******/
