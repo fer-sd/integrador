@@ -2,16 +2,19 @@
 Clase UIElement - Integrador
 */
 
+//Versión uiElement.js
+var uiElementVersion = 1.0;
+
 function uiElement(object){ 
 	/***** PARTE PRIVADA ******/
 
 	/***** Variables privadas ******/
 	//Propietario del elemento 
-	var owner = object.getOwner();
+	var owner = object.getOwner().toLowerCase();
 	//Servicio del propietario sobre el que se va a actuar
-	var service = object.getService();
+	var service = object.getService().toLowerCase();
 	//ID elemento 
-	var id = object.getOwner()+'-'+object.getService();
+	var id = owner+'-'+service;
 	//Tipo de elemento
 	var type="encuesta";
 	//Estado actual
@@ -55,7 +58,7 @@ function uiElement(object){
 		        console.log('Modal minimizado cerrado - Version encuesta CSI: '+csi.getVersion());
 		        break;
 	    	default:
-	        	console.log('Version encuesta CSI: '+csi.getVersion());
+	        	console.log('Encuesta CSI versión ' +csi.getVersion());
 		}
 		//Cambio de estado del uiElement
 	    console.log("Estado antes: "+myUiElement.getCurrentStatus());
@@ -82,7 +85,7 @@ function uiElement(object){
 	}
 	this.setId = function(){
 		//se concatena propietario y servicio
-		id = this.owner+'-'+this.service;
+		id = this.owner.toLowerCase()+'-'+this.service.toLowerCase();
 	}
 	this.getType = function(){
 		return type;

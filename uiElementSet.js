@@ -2,6 +2,9 @@
 Clase UIElementSet - Integrador
 */
 
+//Versión uiElementSet.js
+var uiElementSetVersion = 1.0;
+
 function uiElementSet(){
 
 	/***** PARTE PRIVADA ******/
