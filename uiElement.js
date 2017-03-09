@@ -3,7 +3,7 @@ Clase UIElement - Integrador
 */
 
 //Versión uiElement.js
-var uiElementVersion = 1.0;
+var uiElementVersion = 1.1;
 
 function uiElement(object){ 
 	/***** PARTE PRIVADA ******/
@@ -15,16 +15,65 @@ function uiElement(object){
 	var service = object.getService().toLowerCase();
 	//ID elemento 
 	var id = owner+'-'+service;
-	//Tipo de elemento
-	var type="encuesta";
 	//Estado actual
 	var currentStatus = object.getStatus();
 	//Array de posibles estados
 	var status= object.getStatusSet(); 
+	//Nombre del objeto original
+	var objectName = "";
+
+	//Array de reglas asociadas al uiElement
+	var rules = [];
+
+	//Array de acciones asociadas al uiElement
+	var actionsArray = [];
 	
 	//Función con las acciones asociadas a cada estado del UIElement. 
 	//Este swicth se pasará finalmente como parámetro, y será generado en un módulo aparte (actionsGenerator)
-	var actions = "";
+	var actions = function(csi_status,csi){
+		try{
+			var myStatus = csi.getStatusSet();
+			//Recuperamos id del uiElement
+			var myId = csi.getOwner()+"-"+csi.getService();
+			//Recuperamos el uiElement desde el objeto integrador ya instanciado
+			var myUiElement	= integrador.getUiElement(myId);
+
+			switch(csi_status) {
+		    	case myStatus[0]:
+			        console.log('Encuesta creada - Version encuesta CSI: '+csi.getVersion());
+			        break;
+			    case myStatus[1]:
+			        console.log('Modal encuesta lanzado - Version encuesta CSI: '+csi.getVersion());
+			        $('.usabilla_live_button_container').css('display','none');
+			        console.log('Moquillo encuesta Usabilla cerrado por Integrador');
+			        setTimeout(function(){csi.cerrarModalEncuesta();console.log('Modal encuesta cerrado por Integrador');}, 3000);
+			        break;
+		    	case myStatus[2]:
+			        console.log('Modal encuesta cerrado - Version encuesta CSI: '+csi.getVersion());
+			        break;
+		    	case myStatus[3]:
+			        console.log('Modal inicial lanzado - Version encuesta CSI: '+csi.getVersion());
+		    		setTimeout(function(){csi.cerrarModalInicial();console.log('Modal inicial cerrado por Integrador');}, 3000);
+			        break;
+		    	case myStatus[4]:
+			        console.log('Modal inicial cerrado - Version encuesta CSI: '+csi.getVersion());
+			        break;
+		    	case myStatus[5]:
+			        console.log('Modal minimizado lanzado - Version encuesta CSI: '+csi.getVersion());
+			        break;
+		    	case myStatus[6]:
+			        console.log('Modal minimizado cerrado - Version encuesta CSI: '+csi.getVersion());
+			        break;
+		    	default:
+		        	console.log('Encuesta CSI versión ' +csi.getVersion());
+			}
+			//Cambio de estado del uiElement
+		    console.log("Estado antes: "+myUiElement.getCurrentStatus());
+		    myUiElement.setCurrentStatus(csi_status);
+		    console.log("Estado después: "+myUiElement.getCurrentStatus());
+		}
+		catch(e){}
+	};
 	
 	//Array de posibles estados propios. "on" -> suscrito. "off"->no suscrito. "error" -> se produjo algún error en la suscripción
 	var internalStatus= ["on","off","error"];
@@ -47,12 +96,6 @@ function uiElement(object){
 		//se concatena propietario y servicio
 		id = this.owner.toLowerCase()+'-'+this.service.toLowerCase();
 	}
-	this.getType = function(){
-		return type;
-	}
-	this.setType = function(type){
-		type = this.type;
-	}
 	this.getOwner = function(){
 		return owner;
 	}
@@ -71,6 +114,12 @@ function uiElement(object){
 	this.setStatus = function(status){
 		status = this.status;
 	}
+	this.getObjectName = function(){
+		return objectName;
+	}
+	this.setObjectName = function(object){
+		objectName = object;
+	}
 	this.getCurrentStatus = function(){
 		return currentStatus;
 	}
@@ -88,5 +137,10 @@ function uiElement(object){
 	this.getActions = function(){
 		return actions;
 	}
-
+	this.getRules = function(){
+		return rules;
+	}
+	this.addRule = function(rule){
+		rules.push(rule);
+	}
 };
