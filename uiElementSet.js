@@ -3,7 +3,7 @@ Clase UIElementSet - Integrador
 */
 
 //Versión uiElementSet.js
-var uiElementSetVersion = 1.3;
+var uiElementSetVersion = 1.32;
 
 function uiElementSet(){
 
@@ -14,40 +14,20 @@ function uiElementSet(){
     //Array con los uiElements instanciados
     var uiElements = [];
 
+    //Array de acciones
 	var actionSet = [];
 
-	actionSet[0]="console.log('Encuesta creada - Version encuesta CSI: '+csi.getVersion());";
-	actionSet[1]="console.log('Modal encuesta lanzado - Version encuesta CSI: '+csi.getVersion());$('.usabilla_live_button_container').css('display','none');console.log('Moquillo encuesta Usabilla cerrado por Integrador');setTimeout(function(){csi.cerrarModalEncuesta();console.log('Modal encuesta cerrado por Integrador');}, 3000);";
-	actionSet[2]="console.log('Modal encuesta cerrado - Version encuesta CSI: '+csi.getVersion());";
-	actionSet[3]="console.log('Modal inicial lanzado - Version encuesta CSI: '+csi.getVersion());setTimeout(function(){csi.cerrarModalInicial();console.log('Modal inicial cerrado por Integrador');}, 3000);";
-	actionSet[4]="console.log('Modal inicial cerrado - Version encuesta CSI: '+csi.getVersion());";
-	actionSet[5]="console.log('Modal minimizado lanzado - Version encuesta CSI: '+csi.getVersion());";
-	actionSet[6]="console.log('Modal minimizado cerrado - Version encuesta CSI: '+csi.getVersion());";
-
+	//Rellenamos el array (esta acción se debe incluir en un método aparte). 
+	//La idea es sacar esta operación fuera del uiElementSet
+	actionSet[0]="if (csi_status == myStatus[0]) console.log('Encuesta creada - Version encuesta CSI: '+instance.getVersion());";
+	actionSet[1]="if (csi_status == myStatus[1]) {console.log('Modal encuesta lanzado - Version encuesta CSI: '+instance.getVersion());$('.usabilla_live_button_container').css('display','none');console.log('Moquillo encuesta Usabilla cerrado por Integrador');setTimeout(function(){instance.cerrarModalEncuesta();console.log('Modal encuesta cerrado por Integrador');}, 3000);}";
+	actionSet[2]="if (csi_status == myStatus[2]) {console.log('Modal encuesta cerrado - Version encuesta CSI: '+instance.getVersion());}";
+	actionSet[3]="if (csi_status == myStatus[3]) {console.log('Modal inicial lanzado - Version encuesta CSI: '+instance.getVersion());setTimeout(function(){instance.cerrarModalInicial();console.log('Modal inicial cerrado por Integrador');}, 3000);}";
+	actionSet[4]="if (csi_status == myStatus[4]) {console.log('Modal inicial cerrado - Version encuesta CSI: '+instance.getVersion());}";
+	actionSet[5]="if (csi_status == myStatus[5]) {console.log('Modal minimizado lanzado - Version encuesta CSI: '+instance.getVersion());}";
+	actionSet[6]="if (csi_status == myStatus[6]) {console.log('Modal minimizado cerrado - Version encuesta CSI: '+instance.getVersion());}";
 
 	/***** Métodos privados ******/
-
-	/**
-	* Generador de la función que se pasará como parámetro al uiElement. Debe agregar el switch
-	* @param 
- 	* @return:
-	*/
-	var actionsFunctionGenerator = function(){
-	}
-
-	/**
-	* Inserta acciones seleccionadas en el uiElement
-	* @param 
- 	* @return:
-	*/
-
-	var actionsArrayGenerator = function(selectedActions){
-		var myActionsArray = [];
-			for (c=0 ; c<selectedActions.length; c++)
-				myActionsArray.push(actionSet[c]);
-	    return myActionsArray;
-	}
-
 
 	/**
 	* Método que asocia un id de uiElement con un set de funciones a ejecutar en cada estado
@@ -63,16 +43,10 @@ function uiElementSet(){
 					break;
 				/**
 				case "inbenta-chat":
-					functionsArray.push(actions[]);
-					functionsArray.push(actions[]);
-					functionsArray.push(actions[]);
-					functionsArray.push(actions[]);
+					return actionsArrayGenerator([]);
 					break;
 				case "tealium-login":
-					functionsArray.push(actions[]);
-					functionsArray.push(actions[]);
-					functionsArray.push(actions[]);
-					functionsArray.push(actions[]);
+					return actionsArrayGenerator([]);
 					break;
 				case:
 					break;
@@ -83,6 +57,18 @@ function uiElementSet(){
 		}
 		catch (e){console.log(e)}
 	}
+
+	/**
+	* Inserta acciones seleccionadas en el array de acciones del uiElement
+	* @param selectedActions: Array con las posiciones de las acciones seleccionadas en el actionSet[]
+ 	* @return myActionsArray: Array con las funciones seleccionadas
+	*/
+	var actionsArrayGenerator = function(selectedActions){
+		var myActionsArray = [];
+			for (c=0 ; c<selectedActions.length; c++)
+				myActionsArray.push(actionSet[c]);
+	    return myActionsArray;
+	}	
 
 
 	/***** PARTE PÚBLICA ******/
@@ -107,9 +93,9 @@ function uiElementSet(){
 		    	//Asignación de nombre de objeto original
 		    	myUiElement.setObjectName(object);
 		    	//Añadir reglas
-		    	myUiElement.setActions(actionsSwitcher(myUiElement.getId()));
-		    	//Asignar acciones
 
+		    	//Asignar acciones
+		    	myUiElement.setActions(actionsSwitcher(myUiElement.getId()));
 				 //Añadir elemento al set
 				uiElements.push(myUiElement);
 				return true;
@@ -127,7 +113,7 @@ function uiElementSet(){
 	this.getUiElement = function(id){
 		try{
 			for (c=0 ; c<uiElements.length; c++){
-				console.log(uiElements[c].getId());
+				//console.log(uiElements[c].getId());
 	            if (uiElements[c].getId() == id)
 	            	return uiElements[c];
 	        }
@@ -150,14 +136,17 @@ function uiElementSet(){
     		var myObjectName = myUiElement.getObjectName();
     		//creamos token con la función de suscripción (objeto.metodo())	
 	    	var mySuscriptionFunction = myObjectName+'.'+suscriptionFunction;
-	    	//recuperamos acciones asociadas al uiElement
-	    	var myActionsFunction = myUiElement.getActions();
+	    	//recuperamos el array de acciones asociadas al uiElement
+	    	var myActions = myUiElement.getActionsFunction();
+	    	console.log("FUNCIÓN DE ACCIONES: "+ myActions);
 	    	
 			//Comprueba que el objeto existe yla función de suscripción existe en la clase asociada al objeto
 	        if (typeof(eval(mySuscriptionFunction))=="function"){
-		       var mySuscriptionToken = mySuscriptionFunction+'('+myActionsFunction+')';
+		       var mySuscriptionToken = mySuscriptionFunction+'('+myActions+')';
 		       //Ejecuta la suscripción pasando como parámetro la función de acciones
 		       eval(mySuscriptionToken);
+		       //Si se ha suscrito correctamente, cambiamos estado interno del uiElement a "on"
+		       myUiElement.setCurrentInternalStatus("on");
 		       return true;
 			}
 			else return false;

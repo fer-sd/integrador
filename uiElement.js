@@ -3,7 +3,7 @@ Clase UIElement - Integrador
 */
 
 //Versión uiElement.js
-var uiElementVersion = 1.2;
+var uiElementVersion = 1.32;
 
 function uiElement(object){ 
 	/***** PARTE PRIVADA ******/
@@ -23,9 +23,9 @@ function uiElement(object){
 	var objectName = "";
 
 	//Array de reglas asociadas al uiElement
-	var rules = [];
-	
-	//Función con las acciones asociadas a cada estado del UIElement. 
+	//var rules = [];
+
+	//Array de acciones seleccionadas
 	var actions = [];
 	
 	//Array de posibles estados propios. "on" -> suscrito. "off"->no suscrito. "error" -> se produjo algún error en la suscripción
@@ -34,6 +34,32 @@ function uiElement(object){
 	var currentInternalStatus = "off";
 
 	/***** Métodos privados ******/
+
+	/**
+    * Función con las acciones asociadas a cada estado de la instancia del uiElement en el DOM  
+    * El integrador debe pasar esta función como parámetro al realizar la suscripción al uiElement          
+    * @param currentStatus: String con el estado actual de la instancia del elemento externo
+    * @param instance: instancia en el DOM de la clase del uiElement al que se está suscrito
+    */
+	var actionsFunction = function(currentStatus, instance){
+		try{
+			//Recùperamos id del uiElement
+			var myId = instance.getOwner()+"-"+instance.getService();
+			//Recuperamos el uiElement pasando su id
+			var myUiElement	= integrador.getUiElement(myId);
+			//Array de funciones a ejecutar
+			var myActions = myUiElement.getActions();
+
+			//Ejecutar array de funciones
+			for (var i=1; i<myActions.length; i++)
+	   			myActions[i];
+			//Cambio de estado del uiElement
+		    console.log("Estado antes: "+myUiElement.getCurrentStatus());
+		    myUiElement.setCurrentStatus(currentStatus);
+		    console.log("Estado después: "+myUiElement.getCurrentStatus());
+		}
+		catch (e){console.log(e)}	
+	}
 
 	
 	/***** PARTE PÚBLICA ******/
@@ -92,6 +118,9 @@ function uiElement(object){
 	}	
 	this.getActions = function(){
 		return actions;
+	}
+	this.getActionsFunction = function(){
+		return actionsFunction;
 	}
 	this.getRules = function(){
 		return rules;
