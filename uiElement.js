@@ -3,12 +3,13 @@ Clase UIElement - Integrador
 */
 
 //Versión uiElement.js
-var uiElementVersion = 1.32;
+var uiElementVersion = 1.34;
 
 function uiElement(object){ 
 	/***** PARTE PRIVADA ******/
 
 	/***** Variables privadas ******/
+
 	//Propietario del elemento 
 	var owner = object.getOwner().toLowerCase();
 	//Servicio del propietario sobre el que se va a actuar
@@ -33,10 +34,11 @@ function uiElement(object){
 	//Estado interno actual. Por defecto desactivado. Cambia según resultado de la suscripción. Depende de internalStatus[]
 	var currentInternalStatus = "off";
 
+
 	/***** Métodos privados ******/
 
 	/**
-    * Función con las acciones asociadas a cada estado de la instancia del uiElement en el DOM  
+    * Función que contiene las acciones asociadas a cada estado de la instancia del uiElement en el DOM  
     * El integrador debe pasar esta función como parámetro al realizar la suscripción al uiElement          
     * @param currentStatus: String con el estado actual de la instancia del elemento externo
     * @param instance: instancia en el DOM de la clase del uiElement al que se está suscrito
@@ -49,10 +51,13 @@ function uiElement(object){
 			var myUiElement	= integrador.getUiElement(myId);
 			//Array de funciones a ejecutar
 			var myActions = myUiElement.getActions();
+			//Recuperamos array de posibles estados
+			var myStatus = myUiElement.getStatus();
 
 			//Ejecutar array de funciones
 			for (var i=1; i<myActions.length; i++)
-	   			myActions[i];
+				//Ejecuta cada acción
+	   			eval(myActions[i]);
 			//Cambio de estado del uiElement
 		    console.log("Estado antes: "+myUiElement.getCurrentStatus());
 		    myUiElement.setCurrentStatus(currentStatus);
@@ -60,7 +65,6 @@ function uiElement(object){
 		}
 		catch (e){console.log(e)}	
 	}
-
 	
 	/***** PARTE PÚBLICA ******/
 
