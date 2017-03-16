@@ -1,9 +1,9 @@
-/*
-Clase UIElementSet - Integrador
+/**
+* @fileoverview UIElementSet - Integrador
+*
+* @author POA Development Team
+* @version 1.35
 */
-
-//Versión uiElementSet.js
-var uiElementSetVersion = 1.34;
 
 function uiElementSet(){
 
@@ -31,8 +31,8 @@ function uiElementSet(){
 
 	/**
 	* Método que asocia un id de uiElement con un set de funciones a ejecutar en cada estado
-	* @param id: id del uiElement que se desea obtener (proveedor-servicio)
- 	* @return: functionsArray. Array con las funciones a ejecutar por el uiElement
+	* @param id {String} id del uiElement que se desea obtener (proveedor-servicio)
+ 	* @return: functionsArray {Object}. Array de funciones a ejecutar por el uiElement
 	*/
 	var actionsSwitcher = function(id){
 		try{
@@ -52,7 +52,7 @@ function uiElementSet(){
 					break;
 				**/
 				default:
-					return false;
+					//Comportamiento por defecto
 			}
 		}
 		catch (e){console.log(e)}
@@ -60,8 +60,8 @@ function uiElementSet(){
 
 	/**
 	* Inserta acciones seleccionadas en el array de acciones del uiElement
-	* @param selectedActions: Array con las posiciones de las acciones seleccionadas en el actionSet[]
- 	* @return myActionsArray: Array con las funciones seleccionadas
+	* @param selectedActions {Object} Array que contiene las posiciones de las acciones seleccionadas en el array actionSet[]
+ 	* @return myActionsArray {Object} Array con las funciones seleccionadas
 	*/
 	var actionsArrayGenerator = function(selectedActions){
 		var myActionsArray = [];
@@ -71,9 +71,9 @@ function uiElementSet(){
 	}	
 
 	/**
-    * Método privado que invoca la suscripción del integrador al uiElement            
-    * @param suscriptionFunction: String con la llamada explícita a la función de suscripción
- 	* @return: si se realiza correctamente la operación, devuelve true, en caso contrario, false
+    * Método que invoca a la función suscripción del integrador al uiElement            
+    * @param suscriptionFunction {String} Cadena con la llamada explícita a la función de suscripción
+ 	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
     */
     var suscriptionRequest = function(suscriptionFunction){
     	try{	    	
@@ -97,20 +97,22 @@ function uiElementSet(){
 	/***** Métodos públicos ******/
 
 	/**
-	* Constructor de uiElements en base al objeto pasado como parámetro
-    * @param object: String con el objeto asociado al uiElement instanciado
- 	* @return: si se realiza correctamente la operación, devuelve true, en caso contrario, false
+	* Constructor de uiElements en base al nombre de la instancia del elemento pasado como parámetro
+    * @param instanceName {String} Cadena con el nombre de la instancia asociada al uiElement instanciado
+ 	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
 	*/
-	this.setUiElement = function(object){
+	this.setUiElement = function(instanceName){
 		try{
-			var myObject = window[object];
+			//Instanciamos el elemento en base al nombre pasado como parámetro
+			var myInstance = window[instanceName];
 
-	    	if ((typeof(myObject)!=null) || (typeof(myObject)!=undefined)){
+			//Se comprueba que la instancia es correcta
+	    	if ((typeof(myInstance)!=null) || (typeof(myInstance)!=undefined)){
 	    		/* Inicio constructor del uiElement */
-		    	//Instanciación del uiElement
-		    	var myUiElement = new uiElement(myObject);
-		    	//Asignación de nombre de objeto original
-		    	myUiElement.setObjectName(object);
+		    	//Creaciónn del uiElement
+		    	var myUiElement = new uiElement(myInstance);
+		    	//Asignación de nombre de la instancia del elemento original
+		    	myUiElement.setInstanceName(instanceName);
 		    	//Añadir reglas
 
 		    	//Asignar acciones
@@ -119,29 +121,36 @@ function uiElementSet(){
 				uiElements.push(myUiElement);
 				return true;
 	    	}
-	    	else return false;
+	    	else{
+				//Depuración
+		        console.log('Ocurrió un error en la creación del uiElement ' + instanceName);
+		        return false;
+	    	} 
 	    }
-	    catch (e){console.log(e)}
+	    catch (e){
+	    	console.log(e);
+	    	return false;
+	    }
 	}
 
 	/**
 	* Método que controla el flujo de suscripción del Integrador a un uiElement
-    * @param id: String con la id del uiElement al que se quiere suscribir Integrador
-    * @param suscriptionFunction: String con el nombre de la función de suscripción
- 	* @return: si se realiza correctamente la operación, devuelve true, en caso contrario, false
+    * @param id {String} Cadena con la id del uiElement al que se quiere suscribir Integrador
+    * @param suscriptionFunction {String} Cadena con el nombre de la función de suscripción
+ 	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
 	*/
 	this.setSuscription = function(id,suscriptionFunction){
 		try{
 			//recuperamos uiElement asociado a la id recibida
     		var myUiElement = this.getUiElement(id);
-    		//recuperamos nombre del objeto asociado al uiElement
-    		var myObjectName = myUiElement.getObjectName();
-    		//creamos token con la función de suscripción (objeto.metodo())	
-	    	var mySuscriptionFunction = myObjectName+'.'+suscriptionFunction;
+    		//recuperamos nombre de la instancia del elemento asociado al uiElement
+    		var myInstanceName = myUiElement.getInstanceName();
+    		//creamos token con la función de suscripción (instancia.metodo())	
+	    	var mySuscriptionFunction = myInstanceName+'.'+suscriptionFunction;
 	    	//recuperamos las acciones seleccionadas asociadas al uiElement
 	    	var myActions = myUiElement.getActionsFunction();
 
-	    	//Comprueba que el objeto existe y la función de suscripción existe en la clase asociada al objeto
+	    	//Comprueba que la instancia existe y la función de suscripción existe en la clase asociada a dicha instancia
 	 		//Comprueba que la función de acciones es una función
 	        if (typeof(eval(myActions))=="function" && typeof(eval(mySuscriptionFunction))=="function"){
 	        	//Creamos token de llamada a la suscripción
@@ -154,13 +163,13 @@ function uiElementSet(){
 		        }
 		        else{ 
 		        	//Depuración
-		        	console.log('Ocurrió un error en la suscripción al elemento' + id);
+		        	console.log('Ocurrió un error en la suscripción al elemento ' + id);
 		        	return false;
 		        }
 		    }
 		    else{		        	
 		    		//Depuración
-		        	console.log('Error de validación de tipos de dato del elemento' + id);
+		        	console.log('Error de validación de tipos de dato del elemento ' + id);
 		        	return false;
 
 		    }
@@ -173,8 +182,8 @@ function uiElementSet(){
 
 	/**
 	* Método para extraer un uiElement pasado como parámetro
-	* @param id: id del uiElement que se desea obtener (proveedor-servicio)
-	* @return: si existe, devuelve el uiElement. Si no, devuelve false
+	* @param id {String} Cadena con el nombre del id del uiElement que se desea obtener (proveedor-servicio)
+	* @return {boolean} Si existe, devuelve el uiElement. Si no existe o hay algún error, devuelve false
 	*/
 	this.getUiElement = function(id){
 		try{
@@ -185,13 +194,16 @@ function uiElementSet(){
 	        }
 			return false;
 		}
-		catch (e){console.log(e)}	
+		catch (e){
+			console.log(e);
+			return false;
+		}	
 	}
 
 	/**
-	Método para eliminar un uiElement (objeto) identificado por su id pasada como parámetro
-	* @param id: id del uiElement que se desea eliminar
-	* @return: si existe, devuelve True y elimina el uiElement. Si no se encuentra, devuelve false
+	Método para eliminar un uiElement identificado por su id pasada como parámetro
+	* @param id {String} Cadena con el nombre del id del uiElement que se desea eliminar (proveedor-servicio)
+	* @return {boolean} Si existe, elimina el uiElement. Si no existe o hay algún error, devuelve false
 	*/
     this.removeUiElement = function(id){
     	try{
@@ -203,12 +215,15 @@ function uiElementSet(){
 	        }
 			return false;
 		}
-		catch (e){console.log(e)}
+		catch (e){
+			console.log(e);
+			return false;
+		}
     }
 
 	/**
 	* Devuelve el número de uiElements que contiene el uiElementSet
- 	* @return: número de uiElements que contiene actualmente el uiElementSet
+ 	* @return {Integer} Número de uiElements que contiene actualmente el uiElementSet
 	*/
 	this.getUiElementSetSize = function(){
 		return uiElements.length;

@@ -1,27 +1,27 @@
-/*
-Clase UIElement - Integrador
+/**
+* @fileoverview UIElement - Integrador
+*
+* @author POA Development Team
+* @version 1.35
 */
 
-//Versión uiElement.js
-var uiElementVersion = 1.34;
-
-function uiElement(object){ 
+function uiElement(instance){ 
 	/***** PARTE PRIVADA ******/
 
 	/***** Variables privadas ******/
 
 	//Propietario del elemento 
-	var owner = object.getOwner().toLowerCase();
+	var owner = instance.getOwner().toLowerCase();
 	//Servicio del propietario sobre el que se va a actuar
-	var service = object.getService().toLowerCase();
+	var service = instance.getService().toLowerCase();
 	//ID elemento 
 	var id = owner+'-'+service;
 	//Estado actual
-	var currentStatus = object.getStatus();
+	var currentStatus = instance.getStatus();
 	//Array de posibles estados
-	var status= object.getStatusSet(); 
+	var status= instance.getStatusSet(); 
 	//Nombre del objeto original
-	var objectName = "";
+	var instanceName = "";
 
 	//Array de reglas asociadas al uiElement
 	//var rules = [];
@@ -38,10 +38,11 @@ function uiElement(object){
 	/***** Métodos privados ******/
 
 	/**
-    * Función que contiene las acciones asociadas a cada estado de la instancia del uiElement en el DOM  
+    * Método que genera la función acciones seleccionadas previamente.
+    * Se cargan las acciones asociadas al estado correspondiente de la instancia del uiElement en el DOM  
     * El integrador debe pasar esta función como parámetro al realizar la suscripción al uiElement          
-    * @param currentStatus: String con el estado actual de la instancia del elemento externo
-    * @param instance: instancia en el DOM de la clase del uiElement al que se está suscrito
+    * @param currentStatus {String} Estado actual de la instancia del elemento externo
+    * @param instance {Object} instanciación en el DOM de la clase del uiElement al que se está suscrito
     */
 	var actionsFunction = function(currentStatus, instance){
 		try{
@@ -97,11 +98,11 @@ function uiElement(object){
 	this.setStatus = function(status){
 		status = this.status;
 	}
-	this.getObjectName = function(){
-		return objectName;
+	this.getInstanceName = function(){
+		return instanceName;
 	}
-	this.setObjectName = function(object){
-		objectName = object;
+	this.setInstanceName = function(instance){
+		instanceName = instance;
 	}
 	this.getCurrentStatus = function(){
 		return currentStatus;

@@ -1,4 +1,5 @@
-var csiVersion = "2.922"; //TEST INTEGRADOR
+var csiVersion = "2.923"; 
+// ATENCIÓN VERSIÓN DEVELOPMENT INTEGRADOR - NO PUBLICAR!!!!
 
 /** 
  * Objeto que representa la encuestas de satisfacción de movistar (CSI / EC) 
@@ -40,14 +41,16 @@ function EncuestaCSI(){
 	var v_exclusiones = [];							//Vector de funciones de exclusion
 	var delayObligaciones = 15000;					//Tiempo de espera para lanzar la encuesta si se determina que es por obligación
 	var normalDelay = 2000;							//Tiempo de espera hasta lanzar la encuesta (si aplica)							//
-	var listeners = [];								//Array de suscriptores
 	
-	//Variables públicas para Integrador
-	var owner = "csi";
-	var service = "encuesta";
-	var status = "creada";							//Guarda el estado actual de la encuesta
-	var statusSet = ["creada", "modalEncuestaLanzado", "modalEncuestaCerrado", "modalInicialLanzado", "modalInicialCerrado", 
-	"modalMinimizadoLanzado", "modalMinimizadoCerrado"];
+	/* INTEGRADOR - INICIO VARIABLES */
+	var listeners = [];								//Array de suscriptores al elemento
+	var owner = "csi";								//Propietario del elemento
+	var service = "encuesta";						//Servicio
+	var status = "creada";							//Guarda el estado actual de la encuesta. Por defecto "creada"
+	var statusSet = ["creada", "modalEncuestaLanzado", 
+	"modalEncuestaCerrado", "modalInicialLanzado", "modalInicialCerrado", 
+	"modalMinimizadoLanzado", "modalMinimizadoCerrado"]; //Array de posibles estados del elemento emergente
+	/* INTEGRADOR - FIN VARIABLES */
 	
 	//Cookies
 	var idCookieClicks = "CSI_clicks_acum";			//Contador numero de clics acumulados
@@ -182,6 +185,55 @@ function EncuestaCSI(){
 	//PARTE PÚBLICA
 	
 	//MÉTODOS PÚBLICOS
+
+
+	/* INTEGRADOR - INICIO MÉTODOS PÚBLICOS */
+
+	/**
+	* Método de suscripción a eventos de la encuesta CSI. Si existe la función "func", asigna a la variable de callback su valor
+	* @param func {Object} Función del uiElement que se desea obtener (proveedor-servicio)
+ 	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
+	*/
+	this.onStateCsiChange = function(func){
+		if((typeof func != 'function')){
+			//Depuración
+			console.log(e);
+			return false;
+		}
+		//Almacena función en el array de listeners
+		listeners.push(func);
+		return true;
+	};
+
+	/**
+	 * Método público para obetener el array de estados posibles
+	 */
+	this.getOwner = function(){
+		return owner;
+	};
+
+	/**
+	 * Método público para obetener el array de estados posibles
+	 */
+	this.getService = function(){
+		return service;
+	};
+
+	/**
+	 * Devuelve valor de la variable status
+	*/ 
+	this.getStatus = function(){
+		return status;
+	}
+
+	/**
+	* Devuelve array de posibles estados
+	*/ 
+	this.getStatusSet = function(){
+		return statusSet;
+	}
+
+	/* INTEGRADOR - FIN MÉTODOS PÚBLICOS */
 	
 	/**
 	 * Lanza el modal de la encuesta para cualquier segmento. 
@@ -245,9 +297,10 @@ function EncuestaCSI(){
 			includeTagger();
 			TG.setTaggerDimension(101,getCookieValue(idCookieUltima));
 			TG.setTaggerEvent("CSI", "Encuesta CSI", "ModalEncuesta: " + segmento, "Visualizada", null, null, [11,50,101]).execute();
-
-			//Ejecuta lanzamiento funciones asociadas al cambio de estado
+			
+			/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 			setStatus("modalEncuestaLanzado");
+			/* INTEGRADOR - FIN CAMBIO DE ESTADO */
 
 			return true;
 			
@@ -285,8 +338,9 @@ function EncuestaCSI(){
 			includeTagger();
 			TG.setTaggerEvent("CSI", "Encuesta CSI", "ModalEncuesta: " + segmento, "Cerrada", null, null, [11,50]).execute();
 
-			//Ejecuta lanzamiento funciones asociadas al cambio de estado
+			/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 			setStatus("modalEncuestaCerrado");
+			/* INTEGRADOR - FIN CAMBIO DE ESTADO */
 			
 			return true;
 			
@@ -342,7 +396,9 @@ function EncuestaCSI(){
 				//Enviar a Analytics
 				includeTagger();
 				TG.setTaggerEvent("CSI", "Encuesta CSI", "ModalInicial: " + "facturaInteractiva", "Visualizada", null, null, [11,50]).execute();
-				
+				/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
+				setStatus("modalInicialLanzado");
+				/* INTEGRADOR - FIN CAMBIO DE ESTADO */
 				return true;
 				}, 60000);
 			}
@@ -377,9 +433,9 @@ function EncuestaCSI(){
 			includeTagger();
 			TG.setTaggerEvent("CSI", "Encuesta CSI", "ModalInicial: " + segmento, "Visualizada", null, null, [11,50]).execute();
 
-
-			//Ejecuta lanzamiento funciones asociadas al cambio de estado
+			/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 			setStatus("modalInicialLanzado");
+			/* INTEGRADOR - FIN CAMBIO DE ESTADO */
 
 			return true;
 			}
@@ -419,8 +475,9 @@ function EncuestaCSI(){
 			includeTagger();
 			TG.setTaggerEvent("CSI", "Encuesta CSI", "ModalInicial: " + segmento, "Cerrada", null, null, [11,50]).execute();
 
-			//Ejecuta lanzamiento funciones asociadas al cambio de estado
+			/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 			setStatus("modalInicialCerrado");
+			/* INTEGRADOR - FIN CAMBIO DE ESTADO */
 				
 			return true;
 			
@@ -477,8 +534,9 @@ function EncuestaCSI(){
 			includeTagger();
 			TG.setTaggerEvent("CSI", "Encuesta CSI", "ModalMinimizado: " + segmento, "Visualizada", null, null, [11,50]).execute();
 
-			//Ejecuta lanzamiento funciones asociadas al cambio de estado
+			/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 			setStatus("modalMinimizadoLanzado");
+			/* INTEGRADOR - FIN CAMBIO DE ESTADO */
 			
 			return true;
 		}
@@ -520,8 +578,9 @@ function EncuestaCSI(){
 			includeTagger();
 			TG.setTaggerEvent("CSI", "Encuesta CSI", "ModalMinimizado: " + segmento, "Cerrada", null, null, [11,50]).execute();
 
-			//Ejecuta lanzamiento funciones asociadas al cambio de estado
+			/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 			setStatus("modalMinimizadoCerrado");
+			/* INTEGRADOR - FIN CAMBIO DE ESTADO */
 			
 			return true;
 			
@@ -809,34 +868,6 @@ function EncuestaCSI(){
 	};
 
 
-
-	/*
-	* Método privado que dispara las funciones almacenadas en el array
-	*/
-	var triggerSuscription = function(){
-		//Ejecuta la acción del suscriptor si está definida la función
-		for(var i=0; i<listeners.length; i++) {
-			if (typeof listeners[i] == "function"){
-				try{
-					listeners[i](status,this_csi);	
-				}catch(e){}
-			}
-		}
-	};
-
-	/**
-	 * Método público de suscripción genérica a eventos
-	 * Si existe la función "func", asigna a la variable de callback su valor.
-	 */
-	this.onStateCsiChange = function(func){
-		//Carga suscriptor en el objeto
-		if((typeof func != 'function'))
-			return false
-		//Almacena función en el array
-		listeners.push(func);
-	};
-
-
 	/**
 	 * Método público para establecer versión de la encuesta CSI
 	 */
@@ -851,47 +882,45 @@ function EncuestaCSI(){
 		return version;
 	};
 
-	/**
-	 * Método público para obetener el array de estados posibles
-	 */
-	this.getOwner = function(){
-		return owner;
+	//PARTE PRIVADA
+
+	//MÉTODOS PRIVADOS
+
+	/* INTEGRADOR - INICIO MÉTODOS PRIVADOS */
+	/*
+	* Método que dispara las funciones almacenadas en el array
+	* Se pasa como parámetro el estado actual y la instancia de la encuesta CSI en el DOM
+	*/
+	var triggerSuscription = function(){
+		//Ejecuta las acciones del suscriptor si está definida la función
+		for(var i=0; i<listeners.length; i++) {
+			if (typeof listeners[i] == "function"){
+				try{
+					//Se pasa como parámetro el estado actual y la instancia de la encuesta CSI
+					listeners[i](status,this_csi);	
+					return true;
+				}catch(e){
+					//Depuración
+					console.log(e);
+					return false;
+				}
+			}
+		}
 	};
 
 	/**
-	 * Método público para obetener el array de estados posibles
-	 */
-	this.getService = function(){
-		return service;
-	};
-
-		/**
 	 * Establece el valor de la variable status y lanza funciones asociadas a el estado recibido como parámetro
 	 * @param new_status. Estado actual del modal de la encuestas CSI
 	*/ 
 	var setStatus = function(new_status){
+		//cambia valor de la variable status
 		status = new_status;
+		//Ejecuta lanzamiento de funciones de suscripción
 		triggerSuscription();
 	}
 	
-	/**
-	 * Devuelve valor de la variable status
-	*/ 
-	this.getStatus = function(){
-		return status;
-	}
 
-	/**
-	* Devuelve array de posibles estados
-	*/ 
-	this.getStatusSet = function(){
-		return statusSet;
-	}
-	
-
-	//PARTE PRIVADA
-
-	//MÉTODOS PRIVADOS
+	/* INTEGRADOR - FIN MÉTODOS PRIVADOS */
 
 	/**
 	 * Devuelve true si es IE8 o inferior
