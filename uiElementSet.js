@@ -2,7 +2,7 @@
 * @fileoverview UIElementSet - Integrador
 *
 * @author POA Development Team
-* @version 1.35
+* @version 1.36
 */
 
 function uiElementSet(){
@@ -32,7 +32,7 @@ function uiElementSet(){
 	/**
 	* Método que asocia un id de uiElement con un set de funciones a ejecutar en cada estado
 	* @param id {String} id del uiElement que se desea obtener (proveedor-servicio)
- 	* @return: functionsArray {Object}. Array de funciones a ejecutar por el uiElement
+ 	* @return: functionsArray {object}. Array de funciones a ejecutar por el uiElement. Undefined si hay error
 	*/
 	var actionsSwitcher = function(id){
 		try{
@@ -55,53 +55,31 @@ function uiElementSet(){
 					//Comportamiento por defecto
 			}
 		}
-		catch (e){console.log(e)}
+		catch (e){
+			//Depuración
+			console.log(e)
+			return undefined;
+		}
 	}
 
 	/**
 	* Inserta acciones seleccionadas en el array de acciones del uiElement
-	* @param selectedActions {Object} Array que contiene las posiciones de las acciones seleccionadas en el array actionSet[]
- 	* @return myActionsArray {Object} Array con las funciones seleccionadas
+	* @param selectedActions {object} Array que contiene las posiciones de las acciones seleccionadas en el array actionSet[]
+ 	* @return myActionsArray {object} Array con las funciones seleccionadas
 	*/
 	var actionsArrayGenerator = function(selectedActions){
 		var myActionsArray = [];
 			for (c=0 ; c<selectedActions.length; c++)
 				myActionsArray.push(actionSet[c]);
 	    return myActionsArray;
-	}	
-
-	/**
-    * Método que invoca a la función suscripción del integrador al uiElement            
-    * @param suscriptionFunction {String} Cadena con la llamada explícita a la función de suscripción
- 	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
-    */
-    var suscriptionRequest = function(suscriptionFunction){
-    	try{	    	
-	       //Ejecuta la suscripción pasando como parámetro la función de acciones
-	       //Evitamos uso de eval()
-	       var tmpFunc = new Function(suscriptionFunction);
-			tmpFunc();
-	       return true;
-		}
-	    catch (e){
-	    	console.log(e);
-	    	return false;
-	    }	
 	}
-
-
-	/***** PARTE PÚBLICA ******/
-
-	/***** Variables públicas ******/
-
-	/***** Métodos públicos ******/
 
 	/**
 	* Constructor de uiElements en base al nombre de la instancia del elemento pasado como parámetro
     * @param instanceName {String} Cadena con el nombre de la instancia asociada al uiElement instanciado
  	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
 	*/
-	this.setUiElement = function(instanceName){
+	var setUiElement = function(instanceName){
 		try{
 			//Instanciamos el elemento en base al nombre pasado como parámetro
 			var myInstance = window[instanceName];
@@ -123,7 +101,7 @@ function uiElementSet(){
 	    	}
 	    	else{
 				//Depuración
-		        console.log('Ocurrió un error en la creación del uiElement ' + instanceName);
+		        console.log('Integrador - Ocurrió un error en la creación del uiElement ' + instanceName);
 		        return false;
 	    	} 
 	    }
@@ -131,7 +109,34 @@ function uiElementSet(){
 	    	console.log(e);
 	    	return false;
 	    }
+	}	
+
+	/**
+    * Método que invoca a la función suscripción del integrador al uiElement            
+    * @param suscriptionFunction {String} Cadena con la llamada explícita a la función de suscripción
+ 	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
+    */
+    var suscriptionRequest = function(suscriptionFunction){
+    	try{	    	
+	       //Ejecuta la suscripción pasando como parámetro la función de acciones
+	       //Evitamos uso de eval()
+	       var tmpFunc = new Function(suscriptionFunction);
+			tmpFunc();
+	       return true;
+		}
+	    catch (e){
+	    	//Depuración
+	    	console.log(e);
+	    	return false;
+	    }	
 	}
+
+
+	/***** PARTE PÚBLICA ******/
+
+	/***** Variables públicas ******/
+
+	/***** Métodos públicos ******/
 
 	/**
 	* Método que controla el flujo de suscripción del Integrador a un uiElement
@@ -169,7 +174,7 @@ function uiElementSet(){
 		    }
 		    else{		        	
 		    		//Depuración
-		        	console.log('Error de validación de tipos de dato del elemento ' + id);
+		        	console.log('Integrador - Error de validación de tipos de dato del elemento ' + id);
 		        	return false;
 
 		    }
@@ -183,7 +188,7 @@ function uiElementSet(){
 	/**
 	* Método para extraer un uiElement pasado como parámetro
 	* @param id {String} Cadena con el nombre del id del uiElement que se desea obtener (proveedor-servicio)
-	* @return {boolean} Si existe, devuelve el uiElement. Si no existe o hay algún error, devuelve false
+	* @return {object} Si existe, devuelve el uiElement. Si no existe o hay algún error, devuelve undefined
 	*/
 	this.getUiElement = function(id){
 		try{
@@ -192,11 +197,11 @@ function uiElementSet(){
 	            if (uiElements[c].getId() == id)
 	            	return uiElements[c];
 	        }
-			return false;
+			return undefined;
 		}
 		catch (e){
 			console.log(e);
-			return false;
+			return undefined;
 		}	
 	}
 
@@ -216,6 +221,7 @@ function uiElementSet(){
 			return false;
 		}
 		catch (e){
+			//Depuración
 			console.log(e);
 			return false;
 		}
@@ -228,8 +234,29 @@ function uiElementSet(){
 	this.getUiElementSetSize = function(){
 		return uiElements.length;
 	}
+
+	/**
+	* Recibe aviso de creación de instancia del elemento con nombre "instanceName" en el DOM y lanza creación del uiElement
+	* @param instanceName {String} Cadena con el nombre de la instancia asociada al elemento externo
+	*/
+	this.elementReady = function(instanceName){
+		try{
+			//Si el elemento no existe en el uiElementSet
+			if (this.getUiElement(instanceName) == undefined) {
+				//Construye uiElement y lo incluye en el uiElementSet
+				setUiElement(instanceName);
+			}
+			else{
+				//El elemento ya existe en el uiElementSet
+				console.log("Integrador - el elemento "+ instanceName +" ya está incluido en el Integrador");
+			}
+		}
+		catch(e){
+			//Depuración
+			console.log(e);
+		}
+	}
 }
 
 //Constructor
 var integrador = new uiElementSet();
-

@@ -1,4 +1,4 @@
-var csiVersion = "2.923"; 
+var csiVersion = "2.924"; 
 // ATENCIÓN VERSIÓN DEVELOPMENT INTEGRADOR - NO PUBLICAR!!!!
 
 /** 
@@ -46,8 +46,9 @@ function EncuestaCSI(){
 	var listeners = [];								//Array de suscriptores al elemento
 	var owner = "csi";								//Propietario del elemento
 	var service = "encuesta";						//Servicio
-	var status = "creada";							//Guarda el estado actual de la encuesta. Por defecto "creada"
-	var statusSet = ["creada", "modalEncuestaLanzado", 
+	var instanceName = "encuestaCSI";				//Nombre de la instancia del elemento en el DOM
+	var status = "encuestaCreada";					//Guarda el estado actual de la encuesta. Por defecto: "encuestaCreada"
+	var statusSet = ["encuestaCreada", "modalEncuestaLanzado", 
 	"modalEncuestaCerrado", "modalInicialLanzado", "modalInicialCerrado", 
 	"modalMinimizadoLanzado", "modalMinimizadoCerrado"]; //Array de posibles estados del elemento emergente
 	/* INTEGRADOR - FIN VARIABLES */
@@ -195,14 +196,19 @@ function EncuestaCSI(){
  	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
 	*/
 	this.onStateCsiChange = function(func){
-		if((typeof func != 'function')){
-			//Depuración
-			console.log(e);
+		try{
+			if((typeof func != 'function')){
+				//Depuración
+				console.log(e);
+				return false;
+			}
+			//Almacena función en el array de listeners
+			listeners.push(func);
+			return true;
+		}
+		catch(e){
 			return false;
 		}
-		//Almacena función en el array de listeners
-		listeners.push(func);
-		return true;
 	};
 
 	/**
@@ -231,6 +237,13 @@ function EncuestaCSI(){
 	*/ 
 	this.getStatusSet = function(){
 		return statusSet;
+	}
+
+	/**
+	* Devuelve nombre de la instancia de la clase en el DOM
+	*/ 
+	this.getInstanceName = function(){
+		return instanceName;
 	}
 
 	/* INTEGRADOR - FIN MÉTODOS PÚBLICOS */
@@ -1648,8 +1661,17 @@ function EncuestaCSI(){
 	
 }
 
-//Creación Instancia Global
-	var encuestaCSI = new EncuestaCSI();
+//Creación Instancia Global. El nombre de la instancia debe ser el mismo que el de la variable global "instanceName"
+var encuestaCSI = new EncuestaCSI();
+/* INTEGRADOR - INICIO AVISO INSTANCIACIÓN ELEMENTO */
+//Si el objeto integrador existe, avisar al integrador de la instanciación dele elemento
+if (typeof integrador == "object")
+	integrador.elementReady(encuestaCSI.getInstanceName());
+else
+	//Depuración
+	console.log("Error: el objeto integrador no está instanciado en el DOM");
+/* INTEGRADOR - FIN AVISO INSTANCIACIÓN ELEMENTO */
+
 
 /**
  * Incluye el código de tagger en páina... Afecta a todo el DOM
