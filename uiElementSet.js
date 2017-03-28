@@ -2,7 +2,7 @@
 * @fileoverview UIElementSet - Integrador
 *
 * @author POA Development Team
-* @version 1.36
+* @version 1.37
 */
 
 function uiElementSet(){
@@ -10,7 +10,7 @@ function uiElementSet(){
 	/***** PARTE PRIVADA ******/
 
 	/***** Variables privadas ******/
-        
+       
     //Array con los uiElements instanciados
     var uiElements = [];
 
@@ -18,7 +18,8 @@ function uiElementSet(){
 	var actionSet = [];
 
 	//Rellenamos el array (esta acción se debe incluir en un método aparte). 
-	//La idea es sacar esta operación fuera del uiElementSet
+	
+	/** SACAR ESTA OPERACIÓN FUERA DEL uiElementSet **/
 	actionSet[0]="if (currentStatus == myStatus[0]) console.log('Encuesta creada - Version encuesta CSI: '+instance.getVersion());";
 	actionSet[1]="if (currentStatus == myStatus[1]) {console.log('Modal encuesta lanzado - Version encuesta CSI: '+instance.getVersion());$('.usabilla_live_button_container').css('display','none');console.log('Moquillo encuesta Usabilla cerrado por Integrador');setTimeout(function(){instance.cerrarModalEncuesta();console.log('Modal encuesta cerrado por Integrador');}, 3000);}";
 	actionSet[2]="if (currentStatus == myStatus[2]) {console.log('Modal encuesta cerrado - Version encuesta CSI: '+instance.getVersion());}";
@@ -75,6 +76,94 @@ function uiElementSet(){
 	}
 
 	/**
+	* Inicializa base de datos del integrador para usar indexeddb
+	*/
+	var startIndexeddb = function() {
+        //Nombre: integrador. Versión: 1
+        dataBase = indexedDB.open("integrador", 1);
+ 
+        dataBase.onupgradeneeded = function (e) {
+            active = dataBase.result;
+            object = active.createObjectStore("uiElements", { keyPath : 'id', autoIncrement : false});
+        };
+
+        dataBase.onsuccess = function (e) {
+            console.log('Base de datos cargada correctamente');
+        };
+
+        dataBase.onerror = function (e)  {
+            console.log('Error cargando la base de datos');
+        };
+    }
+
+	/**
+	* Añade un uiElement a la indexeddb
+	*/
+	var addUiElementToIndexeddb = function() {
+		try{
+	        var active = dataBase.result;
+	        var data = active.transaction("uiElements", "readwrite");
+	        var object = data.objectStore("uiElements");
+	        var myUiElement = integrador.getUiElement("csi-encuesta");
+
+	        //Los datos del uiElement tienen que ser guardados como Strings
+	        var request = object.put({
+	            'owner' : myUiElement.getOwner(),
+	            'service' : myUiElement.getService(),
+	            'id' : myUiElement.getId(),
+	            'currentStatus' : myUiElement.getCurrentStatus(),
+	            'status' : myUiElement.getStatus().toString(),
+	            'instanceName' : myUiElement.getInstanceName(),
+	            'actions' : myUiElement.getActions().toString(),
+	            'currentInternalStatus' : myUiElement.getCurrentInternalStatus(),
+	            'actionsFunction' : myUiElement.getActionsFunction().toString()
+	        });
+
+	        request.onerror = function (e) {
+	            console.log(request.error.name + '\n\n' + request.error.message);
+	        };
+		    catch (e){
+		    	console.log(e);
+		    }
+    }
+
+	/**
+	* Carga un uiElement desde la indexeddb
+	* @param 
+ 	* @return 
+	*/
+    this.getUiElementFromIndexeddb = function (id) {
+    	try{
+	        var active = dataBase.result;
+	        var data = active.transaction("uiElements", "readonly");
+	        var object = data.objectStore("uiElements");
+	        var request = object.get(id);
+
+	        request.onsuccess = function() {
+	            var result = request.result;
+
+	            if (result !== undefined) {
+	                /**console.log(
+	                	"owner: " + result.owner +" \n\
+						service: " + result.service +" \n\
+			            id: " + result.id +" \n\
+			            currentStatus: " + result.currentStatus +" \n\
+			            status: " + result.status +" \n\
+			            instanceName: " + result.instanceName +" \n\
+			            actions :  " + result.actions +" \n\
+			            currentInternalStatus :  " + result.currentInternalStatus +" \n\
+			            actionsFunction :  " + result.actionsFunction
+	                );**/
+	                if ((typeof integrador == "object") && (integrador.getUiElement(result.id) == undefined))
+						integrador.elementReady(encuestaCSI.getInstanceName());
+	            }
+	        };
+		    catch (e){
+		    	console.log(e);
+		    }
+    }
+
+	/**
 	* Constructor de uiElements en base al nombre de la instancia del elemento pasado como parámetro
     * @param instanceName {String} Cadena con el nombre de la instancia asociada al uiElement instanciado
  	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
@@ -97,8 +186,12 @@ function uiElementSet(){
 		    	myUiElement.setActions(actionsSwitcher(myUiElement.getId()));
 				 //Añadir elemento al set
 				uiElements.push(myUiElement);
+
+				//Guardar uiElement en Indexeddb
+				addUiElementToIndexeddb();
+
 				return true;
-	    	}
+		    }
 	    	else{
 				//Depuración
 		        console.log('Integrador - Ocurrió un error en la creación del uiElement ' + instanceName);
@@ -109,7 +202,7 @@ function uiElementSet(){
 	    	console.log(e);
 	    	return false;
 	    }
-	}	
+	}
 
 	/**
     * Método que invoca a la función suscripción del integrador al uiElement            
@@ -129,6 +222,14 @@ function uiElementSet(){
 	    	console.log(e);
 	    	return false;
 	    }	
+	}
+
+	/**
+    * Método inicial  
+    **/
+	var init = function(){
+		//Arrancar Indexeddb
+		startIndexeddb();
 	}
 
 
@@ -154,7 +255,6 @@ function uiElementSet(){
 	    	var mySuscriptionFunction = myInstanceName+'.'+suscriptionFunction;
 	    	//recuperamos las acciones seleccionadas asociadas al uiElement
 	    	var myActions = myUiElement.getActionsFunction();
-
 	    	//Comprueba que la instancia existe y la función de suscripción existe en la clase asociada a dicha instancia
 	 		//Comprueba que la función de acciones es una función
 	        if (typeof(eval(myActions))=="function" && typeof(eval(mySuscriptionFunction))=="function"){
@@ -235,6 +335,10 @@ function uiElementSet(){
 		return uiElements.length;
 	}
 
+	this.getUiElementSet = function(){
+		return uiElements;
+	}
+
 	/**
 	* Recibe aviso de creación de instancia del elemento con nombre "instanceName" en el DOM y lanza creación del uiElement
 	* @param instanceName {String} Cadena con el nombre de la instancia asociada al elemento externo
@@ -256,7 +360,13 @@ function uiElementSet(){
 			console.log(e);
 		}
 	}
-}
 
-//Constructor
+	/***** INICIALIZACIÓN ******/
+
+	init();
+}
+//Creación base de datos
+var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+var dataBase = null;
+//Constructor (instanciación del objeto)
 var integrador = new uiElementSet();
