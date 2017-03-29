@@ -2,7 +2,7 @@
 * @fileoverview UIElement - Integrador
 *
 * @author POA Development Team
-* @version 1.35
+* @version 1.36
 */
 
 function uiElement(instance){ 
@@ -18,7 +18,7 @@ function uiElement(instance){
 	var id = owner+'-'+service;
 	//Estado actual
 	var currentStatus = instance.getStatus();
-	//Array de posibles estados
+	//Set de posibles estados
 	var status= instance.getStatusSet(); 
 	//Nombre del objeto original
 	var instanceName = "";
@@ -42,7 +42,8 @@ function uiElement(instance){
     * Se cargan las acciones asociadas al estado correspondiente de la instancia del uiElement en el DOM  
     * El integrador debe pasar esta función como parámetro al realizar la suscripción al uiElement          
     * @param currentStatus {String} Estado actual de la instancia del elemento externo
-    * @param instance {Object} instanciación en el DOM de la clase del uiElement al que se está suscrito
+    * @param instance {Object} instanciai
+    ción en el DOM de la clase del uiElement al que se está suscrito
   	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
     */
 	var actionsFunction = function(currentStatus, instance){
@@ -90,9 +91,9 @@ function uiElement(instance){
 	this.getId = function(){
 		return id;
 	}
-	this.setId = function(){
+	this.setId = function(owner,service){
 		//se concatena propietario y servicio
-		id = this.owner.toLowerCase()+'-'+this.service.toLowerCase();
+		id = owner.toLowerCase()+'-'+service.toLowerCase();
 	}
 	this.getOwner = function(){
 		return owner;
@@ -141,10 +142,12 @@ function uiElement(instance){
 	this.getActionsFunction = function(){
 		return actionsFunction;
 	}
+	/*
 	this.getRules = function(){
 		return rules;
 	}
 	this.addRule = function(rule){
 		rules.push(rule);
 	}
+	*/
 };

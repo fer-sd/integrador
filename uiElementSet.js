@@ -2,7 +2,7 @@
 * @fileoverview UIElementSet - Integrador
 *
 * @author POA Development Team
-* @version 1.37
+* @version 1.38
 */
 
 function uiElementSet(){
@@ -78,7 +78,7 @@ function uiElementSet(){
 	/**
 	* Inicializa base de datos del integrador para usar indexeddb
 	*/
-	var startIndexeddb = function() {
+	var startDb = function() {
         //Nombre: integrador. Versión: 1
         dataBase = indexedDB.open("integrador", 1);
  
@@ -98,13 +98,15 @@ function uiElementSet(){
 
 	/**
 	* Añade un uiElement a la indexeddb
+	* @param id {String} id del uiElement a recuperar
 	*/
-	var addUiElementToIndexeddb = function() {
+	var addUiElementToDb = function(id) {
 		try{
 	        var active = dataBase.result;
 	        var data = active.transaction("uiElements", "readwrite");
 	        var object = data.objectStore("uiElements");
-	        var myUiElement = integrador.getUiElement("csi-encuesta");
+	        //Recuperamos uiElemento del UiElementSet en base a la id
+	        var myUiElement = integrador.getUiElement(id);
 
 	        //Los datos del uiElement tienen que ser guardados como Strings
 	        var request = object.put({
@@ -133,7 +135,7 @@ function uiElementSet(){
 	* @param id {String} id del uiElement a recuperar
  	* @return 
 	*/
-    this.getUiElementFromIndexeddb = function (id) {
+    var getUiElementFromDb = function (id) {
     	try{
 	        var active = dataBase.result;
 	        var data = active.transaction("uiElements", "readonly");
@@ -142,22 +144,44 @@ function uiElementSet(){
 
 	        request.onsuccess = function() {
 	            var result = request.result;
-
+	            //Existe información almacenada en la BBDD para el uiElement
 	            if (result !== undefined) {
-	            	
-	            	//console.log("uiElement" + integrador.getUiElement("csi-encuesta").getOwner + " recuperado de la BBDD");
-	                /**console.log(
-	                	"owner: " + result.owner +" \n\
-						service: " + result.service +" \n\
-			            id: " + result.id +" \n\
-			            currentStatus: " + result.currentStatus +" \n\
-			            status: " + result.status +" \n\
-			            instanceName: " + result.instanceName +" \n\
-			            actions :  " + result.actions +" \n\
-			            currentInternalStatus :  " + result.currentInternalStatus +" \n\
-			            actionsFunction :  " + result.actionsFunction
-	                );**/
-	            }
+		        	//Instanciamos el elemento en base al nombre de la instancia almacenado en la BBDD
+					var myInstance = window[result.instanceName];
+					//Se comprueba que el uiElement existe en el DOM
+			    	if ((typeof(myInstance)!=null) || (typeof(myInstance)!=undefined)){
+			    		/* Inicio constructor del uiElement */
+				    	//Creaciónn del uiElement
+				    	var myUiElement = new uiElement(myInstance);
+				    	//Restauración de atributos del uiElement desde la BBDD en su formato original
+				    	myUiElement.setOwner(result.owner);
+				    	myUiElement.setService(result.service);
+				    	myUiElement.setId(result.owner,result.service);
+				    	myUiElement.setCurrentStatus(result.currentStatus);
+				    	myUiElement.setStatus(result.status.split(","));
+				    	myUiElement.setInstanceName(result.instanceName);
+				    	myUiElement.setCurrentInternalStatus(result.currentInternalStatus);
+				    	//Añadir reglas
+
+				    	//Asignar acciones
+				    	myUiElement.setActions(actionsSwitcher(result.id));
+						 //Añadir elemento restaurado al uiElementSet
+						uiElements.push(myUiElement);
+
+						return true;
+				    }
+			    	else{
+						//Depuración
+				        console.log('Integrador - El elemento ' + instanceName + ' no está instanciado en el DOM');
+				        return false;
+			    	} 
+			    }
+			    else{
+			    	 //Depuración
+				     console.log('Integrador - No existe información almacenada en la BBDD');
+				     return false;
+
+			    }
 	        };
 	    }
 	    catch (e){
@@ -228,7 +252,7 @@ function uiElementSet(){
     **/
 	var init = function(){
 		//Arrancar Indexeddb
-		startIndexeddb();
+		startDb();
 	}
 
 
