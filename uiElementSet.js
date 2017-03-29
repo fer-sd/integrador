@@ -122,14 +122,15 @@ function uiElementSet(){
 	        request.onerror = function (e) {
 	            console.log(request.error.name + '\n\n' + request.error.message);
 	        };
-		    catch (e){
-		    	console.log(e);
-		    }
+	    }
+	    catch (e){
+	    	console.log(e);
+	    }
     }
 
 	/**
 	* Carga un uiElement desde la indexeddb
-	* @param 
+	* @param id {String} id del uiElement a recuperar
  	* @return 
 	*/
     this.getUiElementFromIndexeddb = function (id) {
@@ -143,6 +144,8 @@ function uiElementSet(){
 	            var result = request.result;
 
 	            if (result !== undefined) {
+	            	
+	            	//console.log("uiElement" + integrador.getUiElement("csi-encuesta").getOwner + " recuperado de la BBDD");
 	                /**console.log(
 	                	"owner: " + result.owner +" \n\
 						service: " + result.service +" \n\
@@ -154,13 +157,12 @@ function uiElementSet(){
 			            currentInternalStatus :  " + result.currentInternalStatus +" \n\
 			            actionsFunction :  " + result.actionsFunction
 	                );**/
-	                if ((typeof integrador == "object") && (integrador.getUiElement(result.id) == undefined))
-						integrador.elementReady(encuestaCSI.getInstanceName());
 	            }
 	        };
-		    catch (e){
-		    	console.log(e);
-		    }
+	    }
+	    catch (e){
+	    	console.log(e);
+	    }
     }
 
 	/**
@@ -186,9 +188,6 @@ function uiElementSet(){
 		    	myUiElement.setActions(actionsSwitcher(myUiElement.getId()));
 				 //Añadir elemento al set
 				uiElements.push(myUiElement);
-
-				//Guardar uiElement en Indexeddb
-				addUiElementToIndexeddb();
 
 				return true;
 		    }
