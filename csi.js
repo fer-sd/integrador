@@ -212,14 +212,14 @@ function EncuestaCSI(){
 	};
 
 	/**
-	 * Método público para obetener el array de estados posibles
+	 * Método público para obetener el dueño (owner)
 	 */
 	this.getOwner = function(){
 		return owner;
 	};
 
 	/**
-	 * Método público para obetener el array de estados posibles
+	 * Método público para obetener el servicio asociado
 	 */
 	this.getService = function(){
 		return service;
@@ -1663,14 +1663,14 @@ function EncuestaCSI(){
 
 //Creación Instancia Global. El nombre de la instancia debe ser el mismo que el de la variable global "instanceName"
 var encuestaCSI = new EncuestaCSI();
-/* INTEGRADOR - INICIO AVISO INSTANCIACIÓN ELEMENTO */
+/* INTEGRADOR - INICIO TRIGGER INSTANCIACIÓN ELEMENTO */
 //Si el objeto integrador existe, avisar al integrador de la instanciación dele elemento
 if (typeof integrador == "object")
-	integrador.elementReady(encuestaCSI.getInstanceName());
+	integrador.elementReady("encuestaCSI");
 else
 	//Depuración
-	console.log("Error: el objeto integrador no está instanciado en el DOM");
-/* INTEGRADOR - FIN AVISO INSTANCIACIÓN ELEMENTO */
+	//console.log("Error: el objeto integrador no está instanciado en el DOM");
+/* INTEGRADOR - FIN TRIGGER INSTANCIACIÓN ELEMENTO */
 
 
 /**

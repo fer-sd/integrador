@@ -66,7 +66,7 @@ function uiElement(instance){
 			var myStatus = myUiElement.getStatus();
 
 			//Ejecutar array de funciones
-			for (var i=1; i<myActions.length; i++)
+			for (var i=0; i<myActions.length; i++)
 				//Ejecuta cada acción
 	   			eval(myActions[i]);
 			//Cambio de estado del uiElement

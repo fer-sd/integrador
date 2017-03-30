@@ -2,7 +2,7 @@
 * @fileoverview UIElementSet - Integrador
 *
 * @author POA Development Team
-* @version 1.38
+* @version 1.39
 */
 
 function uiElementSet(){
@@ -20,6 +20,7 @@ function uiElementSet(){
 	//Rellenamos el array (esta acción se debe incluir en un método aparte). 
 	
 	/** SACAR ESTA OPERACIÓN FUERA DEL uiElementSet **/
+	//Acciones Encuesta CSI
 	actionSet[0]="if (currentStatus == myStatus[0]) console.log('Encuesta creada - Version encuesta CSI: '+instance.getVersion());";
 	actionSet[1]="if (currentStatus == myStatus[1]) {console.log('Modal encuesta lanzado - Version encuesta CSI: '+instance.getVersion());$('.usabilla_live_button_container').css('display','none');console.log('Moquillo encuesta Usabilla cerrado por Integrador');setTimeout(function(){instance.cerrarModalEncuesta();console.log('Modal encuesta cerrado por Integrador');}, 3000);}";
 	actionSet[2]="if (currentStatus == myStatus[2]) {console.log('Modal encuesta cerrado - Version encuesta CSI: '+instance.getVersion());}";
@@ -27,7 +28,13 @@ function uiElementSet(){
 	actionSet[4]="if (currentStatus == myStatus[4]) {console.log('Modal inicial cerrado - Version encuesta CSI: '+instance.getVersion());}";
 	actionSet[5]="if (currentStatus == myStatus[5]) {console.log('Modal minimizado lanzado - Version encuesta CSI: '+instance.getVersion());}";
 	actionSet[6]="if (currentStatus == myStatus[6]) {console.log('Modal minimizado cerrado - Version encuesta CSI: '+instance.getVersion());}";
-
+	//Acciones POA chat
+	actionSet[7]="if (currentStatus == myStatus[7]) console.log('Chat creado - Estado: '+ instance.getCurrentStatus());";
+	actionSet[8]="if (currentStatus == myStatus[8]) {console.log('Modal solicitud de chat lanzado - Estado: '+ instance.getCurrentStatus());}";
+	actionSet[9]="if (currentStatus == myStatus[9]) {console.log('Modal solicitud de chat cerrado - Estado: '+ instance.getCurrentStatus());}";
+	actionSet[10]="if (currentStatus == myStatus[10]) {console.log('Modal conversación de chat lanzado - Estado: '+ instance.getCurrentStatus());}";
+	actionSet[11]="if (currentStatus == myStatus[10]) {console.log('Modal conversación de chat cerrado - Estado: '+ instance.getCurrentStatus());}";
+	
 	/***** Métodos privados ******/
 
 	/**
@@ -42,10 +49,12 @@ function uiElementSet(){
 					//Llamaos a generador de array de acciones con las posiciones de las acciones seleccionadas
 					return actionsArrayGenerator([0,1,2,3,4,5,6]);	
 					break;
-				/**
-				case "inbenta-chat":
-					return actionsArrayGenerator([]);
+				
+				case "poa-chat":
+					return actionsArrayGenerator([7,8,9,10,11]);
 					break;
+
+				/**
 				case "tealium-login":
 					return actionsArrayGenerator([]);
 					break;
@@ -70,8 +79,10 @@ function uiElementSet(){
 	*/
 	var actionsArrayGenerator = function(selectedActions){
 		var myActionsArray = [];
-			for (c=0 ; c<selectedActions.length; c++)
-				myActionsArray.push(actionSet[c]);
+			for (c=0 ; c<selectedActions.length; c++){
+				var currentAction = actionSet[(selectedActions[c])];
+				myActionsArray.push(currentAction);
+			}
 	    return myActionsArray;
 	}
 
@@ -149,7 +160,7 @@ function uiElementSet(){
 		        	//Instanciamos el elemento en base al nombre de la instancia almacenado en la BBDD
 					var myInstance = window[result.instanceName];
 					//Se comprueba que el uiElement existe en el DOM
-			    	if ((typeof(myInstance)!=null) || (typeof(myInstance)!=undefined)){
+			    	if ((typeof(myInstance)!=null) && (typeof(myInstance)!=undefined)){
 			    		/* Inicio constructor del uiElement */
 				    	//Creaciónn del uiElement
 				    	var myUiElement = new uiElement(myInstance);
@@ -200,7 +211,7 @@ function uiElementSet(){
 			var myInstance = window[instanceName];
 
 			//Se comprueba que la instancia es correcta
-	    	if ((typeof(myInstance)!=null) || (typeof(myInstance)!=undefined)){
+	    	if ((typeof(myInstance)!=null) && (typeof(myInstance)!=undefined)){
 	    		/* Inicio constructor del uiElement */
 		    	//Creaciónn del uiElement
 		    	var myUiElement = new uiElement(myInstance);
@@ -236,8 +247,7 @@ function uiElementSet(){
     	try{	    	
 	       //Ejecuta la suscripción pasando como parámetro la función de acciones
 	       //Evitamos uso de eval()
-	       var tmpFunc = new Function(suscriptionFunction);
-			tmpFunc();
+	       eval(suscriptionFunction);
 	       return true;
 		}
 	    catch (e){
@@ -368,7 +378,11 @@ function uiElementSet(){
 	*/
 	this.elementReady = function(instanceName){
 		try{
-			//Si el elemento no existe en el uiElementSet
+			//Si el elemento no existe en el uiElementSet 
+
+
+			//!!!!!!!!!!!!!!!!!!!!!!!OJO, HAY QUE PASAR el ID al getUiElement, no el nombre de instancia)
+			//if (this.getUiElement(id) == undefined) {
 			if (this.getUiElement(instanceName) == undefined) {
 				//Construye uiElement y lo incluye en el uiElementSet
 				setUiElement(instanceName);
