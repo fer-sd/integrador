@@ -1,4 +1,4 @@
-var csiVersion = "2.924"; 
+var csiVersion = "2.925"; 
 // ATENCIÓN VERSIÓN DEVELOPMENT INTEGRADOR - NO PUBLICAR!!!!
 
 /** 
@@ -47,7 +47,7 @@ function EncuestaCSI(){
 	var owner = "csi";								//Propietario del elemento
 	var service = "encuesta";						//Servicio
 	var instanceName = "encuestaCSI";				//Nombre de la instancia del elemento en el DOM
-	var status = "encuestaCreada";					//Guarda el estado actual de la encuesta. Por defecto: "encuestaCreada"
+	var currentStatus = "encuestaCreada";			//Guarda el estado actual de la encuesta. Por defecto: "encuestaCreada"
 	var statusSet = ["encuestaCreada", "modalEncuestaLanzado", 
 	"modalEncuestaCerrado", "modalInicialLanzado", "modalInicialCerrado", 
 	"modalMinimizadoLanzado", "modalMinimizadoCerrado"]; //Array de posibles estados del elemento emergente
@@ -226,10 +226,10 @@ function EncuestaCSI(){
 	};
 
 	/**
-	 * Devuelve valor de la variable status
+	 * Devuelve valor de la variable currentStatus
 	*/ 
-	this.getStatus = function(){
-		return status;
+	this.getCurrentStatus = function(){
+		return currentStatus;
 	}
 
 	/**
@@ -910,7 +910,7 @@ function EncuestaCSI(){
 			if (typeof listeners[i] == "function"){
 				try{
 					//Se pasa como parámetro el estado actual y la instancia de la encuesta CSI
-					listeners[i](status,this_csi);	
+					listeners[i](currentStatus,this_csi);	
 					return true;
 				}catch(e){
 					//Depuración
@@ -926,8 +926,8 @@ function EncuestaCSI(){
 	 * @param new_status. Estado actual del modal de la encuestas CSI
 	*/ 
 	var setStatus = function(new_status){
-		//cambia valor de la variable status
-		status = new_status;
+		//cambia valor de la variable del estado actual
+		currentStatus = new_status;
 		//Ejecuta lanzamiento de funciones de suscripción
 		triggerSuscription();
 	}

@@ -5,7 +5,7 @@ function PoaChat(){
 	var owner = "poa";							//Propietario del elemento
 	var service = "chat";						//Servicio
 	var instanceName = "poaChat";				//Nombre de la instancia del elemento en el DOM
-	var status = "chatCreado";				//Guarda el estado actual de la encuesta. 
+	var currentStatus = "chatCreado";				//Guarda el estado actual de la encuesta. 
 	var statusSet = ["chatCreado","modalSolicitudLanzado","modalSolicitudCerrado","modalConversacionLanzado","modalConversacionCerrado"]; //Array de posibles estados del elemento emergente
 	/* INTEGRADOR - FIN VARIABLES */
 
@@ -81,10 +81,10 @@ function PoaChat(){
 	};
 
 	/**
-	 * Devuelve valor de la variable status
+	 * Devuelve valor de la variable currentStatus
 	*/ 
-	this.getStatus = function(){
-		return status;
+	this.getCurrentStatus = function(){
+		return currentStatus;
 	}
 
 	/**
@@ -116,7 +116,7 @@ function PoaChat(){
 			if (typeof listeners[i] == "function"){
 				try{
 					//Se pasa como parámetro el estado actual y la instancia del chat POA en el DOM
-					listeners[i](status,thisPoaChat);	
+					listeners[i](currentStatus,thisPoaChat);	
 					return true;
 				}catch(e){
 					//Depuración
@@ -133,7 +133,7 @@ function PoaChat(){
 	*/ 
 	var setStatus = function(new_status){
 		//cambia valor de la variable status
-		status = new_status;
+		currentStatus = new_status;
 		//Ejecuta lanzamiento de funciones de suscripción
 		triggerSuscription();
 	}	
@@ -144,7 +144,7 @@ var poaChat = new PoaChat();
 /* INTEGRADOR - INICIO TRIGGER INSTANCIACIÓN ELEMENTO */
 //Si el objeto integrador existe, avisar al integrador de la instanciación dele elemento
 if (typeof integrador == "object")
-	integrador.elementReady("poaChat", "poa-chat");
+	integrador.elementReady("poaChat");
 else
 	//Depuración
 	console.log("Error: el objeto integrador no está instanciado en el DOM");

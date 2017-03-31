@@ -2,7 +2,7 @@
 * @fileoverview UIElement - Integrador
 *
 * @author POA Development Team
-* @version 1.36
+* @version 1.37
 */
 
 function uiElement(instance){ 
@@ -17,9 +17,9 @@ function uiElement(instance){
 	//ID elemento 
 	var id = owner+'-'+service;
 	//Estado actual
-	var currentStatus = instance.getStatus();
+	var currentStatus = instance.getCurrentStatus();
 	//Set de posibles estados
-	var status= instance.getStatusSet(); 
+	var statusSet= instance.getStatusSet(); 
 	//Nombre del objeto original
 	var instanceName = "";
 
@@ -62,7 +62,7 @@ function uiElement(instance){
 			//Array de funciones a ejecutar
 			var myActions = myUiElement.getActions();
 			//Recuperamos array de posibles estados
-			var myStatus = myUiElement.getStatus();
+			var myStatus = myUiElement.getStatusSet();
 
 			//Ejecutar array de funciones
 			for (var i=0; i<myActions.length; i++)
@@ -106,11 +106,11 @@ function uiElement(instance){
 	this.setService = function(service){
 		service = this.service;
 	}
-	this.getStatus = function(){
-		return status;
+	this.getStatusSet = function(){
+		return statusSet;
 	}
-	this.setStatus = function(status){
-		status = this.status;
+	this.setStatusSet = function(statusSet){
+		statusSet = this.statusSet;
 	}
 	this.getInstanceName = function(){
 		return instanceName;

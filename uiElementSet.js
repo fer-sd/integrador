@@ -2,7 +2,7 @@
 * @fileoverview UIElementSet - Integrador
 *
 * @author POA Development Team
-* @version 1.39
+* @version 1.40
 */
 
 function uiElementSet(){
@@ -29,11 +29,11 @@ function uiElementSet(){
 	actionSet[5]="if (currentStatus == myStatus[5]) {console.log('Modal minimizado lanzado - Version encuesta CSI: '+instance.getVersion());}";
 	actionSet[6]="if (currentStatus == myStatus[6]) {console.log('Modal minimizado cerrado - Version encuesta CSI: '+instance.getVersion());}";
 	//Acciones POA chat
-	actionSet[7]="if (currentStatus == myStatus[0]) console.log('Chat creado - Estado: '+ instance.getStatus());";
-	actionSet[8]="if (currentStatus == myStatus[1]) {console.log('Modal solicitud de chat lanzado - Estado: '+ instance.getStatus());}";
-	actionSet[9]="if (currentStatus == myStatus[2]) {console.log('Modal solicitud de chat cerrado - Estado: '+ instance.getStatus());}";
-	actionSet[10]="if (currentStatus == myStatus[3]) {console.log('Modal conversación de chat lanzado - Estado: '+ instance.getStatus());}";
-	actionSet[11]="if (currentStatus == myStatus[4]) {console.log('Modal conversación de chat cerrado - Estado: '+ instance.getStatus());}";
+	actionSet[7]="if (currentStatus == myStatus[0]) console.log('Chat creado - Estado: '+ instance.getCurrentStatus());";
+	actionSet[8]="if (currentStatus == myStatus[1]) {console.log('Modal solicitud de chat lanzado - Estado: '+ instance.getCurrentStatus());}";
+	actionSet[9]="if (currentStatus == myStatus[2]) {console.log('Modal solicitud de chat cerrado - Estado: '+ instance.getCurrentStatus());}";
+	actionSet[10]="if (currentStatus == myStatus[3]) {console.log('Modal conversación de chat lanzado - Estado: '+ instance.getCurrentStatus());}";
+	actionSet[11]="if (currentStatus == myStatus[4]) {console.log('Modal conversación de chat cerrado - Estado: '+ instance.getCurrentStatus());}";
 	
 	/***** Métodos privados ******/
 
@@ -125,7 +125,7 @@ function uiElementSet(){
 	            'service' : myUiElement.getService(),
 	            'id' : myUiElement.getId(),
 	            'currentStatus' : myUiElement.getCurrentStatus(),
-	            'status' : myUiElement.getStatus().toString(),
+	            'statusSet' : myUiElement.getStatusSet().toString(),
 	            'instanceName' : myUiElement.getInstanceName(),
 	            'actions' : myUiElement.getActions().toString(),
 	            'currentInternalStatus' : myUiElement.getCurrentInternalStatus(),
@@ -169,7 +169,7 @@ function uiElementSet(){
 				    	myUiElement.setService(result.service);
 				    	myUiElement.setId(result.owner,result.service);
 				    	myUiElement.setCurrentStatus(result.currentStatus);
-				    	myUiElement.setStatus(result.status.split(","));
+				    	myUiElement.setStatus(result.statusSet.split(","));
 				    	myUiElement.setInstanceName(result.instanceName);
 				    	myUiElement.setCurrentInternalStatus(result.currentInternalStatus);
 				    	//Añadir reglas
