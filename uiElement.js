@@ -42,13 +42,12 @@ function uiElement(instance){
     * Se cargan las acciones asociadas al estado correspondiente de la instancia del uiElement en el DOM  
     * El integrador debe pasar esta función como parámetro al realizar la suscripción al uiElement          
     * @param currentStatus {String} Estado actual de la instancia del elemento externo
-    * @param instance {Object} instanciai
-    ción en el DOM de la clase del uiElement al que se está suscrito
+    * @param instance {Object} instanciaición en el DOM de la clase del uiElement al que se está suscrito
   	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
     */
 	var actionsFunction = function(currentStatus, instance){
 		try{
-			//Recùperamos id del uiElement
+			//Recuperamos id del uiElement
 			var myId = instance.getOwner()+"-"+instance.getService();
 			//Recuperamos el uiElement pasando su id
 			if (typeof integrador == "object"){
