@@ -42,13 +42,11 @@ function PoaChat(){
 		/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 		setStatus("modalSolicitudLanzado");
 		/* INTEGRADOR - FIN CAMBIO DE ESTADO */
-	}
-
-	this.cerrarModalSolicitud = function(){
-		$("#modalSolicitud").modal('toggle');
-		/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
-		setStatus("modalSolicitudCerrado");
-		/* INTEGRADOR - FIN CAMBIO DE ESTADO */
+		$("#modalSolicitud").on('hide.bs.modal', function (e) {
+			/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
+			setStatus("modalSolicitudCerrado");
+			/* INTEGRADOR - FIN CAMBIO DE ESTADO */
+		});
 	}
 
 	this.lanzarModalConversacion = function(){
@@ -57,13 +55,12 @@ function PoaChat(){
 		/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 		setStatus("modalConversacionLanzado");
 		/* INTEGRADOR - FIN CAMBIO DE ESTADO */
-	}
-
-	this.cerrarModalConversacion = function(){
-		$("#modalConversacion").modal('toggle');
+		$( "#modalConversacion" ).on('hide.bs.modal', function (e) {
 		/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 		setStatus("modalConversacionCerrado");
 		/* INTEGRADOR - FIN CAMBIO DE ESTADO */
+		});
+
 	}
 
 	/**
@@ -136,8 +133,7 @@ function PoaChat(){
 		currentStatus = new_status;
 		//Ejecuta lanzamiento de funciones de suscripción
 		triggerSuscription();
-	}	
-
+	}
 }
 
 var poaChat = new PoaChat();
