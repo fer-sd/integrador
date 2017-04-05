@@ -2,7 +2,7 @@
 * @fileoverview UIElementSet - Integrador
 *
 * @author POA Development Team
-* @version 1.40
+* @version 1.50
 */
 
 function uiElementSet(){
@@ -87,11 +87,12 @@ function uiElementSet(){
 	}
 
 	/**
-	* Inicializa base de datos del integrador para usar indexeddb
+	* Inicializa base de datos del integrador para usar indexeddb y recupera los uiElements almacenados
 	*/
 	var startDb = function() {
         //Nombre: integrador. Versión: 1
-        dataBase = indexedDB.open("integrador", 1);
+        /*
+		dataBase = indexedDB.open("integrador", 1);
  
         dataBase.onupgradeneeded = function (e) {
             active = dataBase.result;
@@ -105,6 +106,46 @@ function uiElementSet(){
         dataBase.onerror = function (e)  {
             console.log('Error cargando la base de datos');
         };
+		*/
+		
+		// Abrir la BBDD
+		dataBase = indexedDB.open("integrador", 1);
+		dataBase.onupgradeneeded = function (e) {
+			active = dataBase.result;
+			// crear instancia del contenedor (tabla) donde están los uiElements almacenados
+			object = active.createObjectStore("uiElements", { keyPath : 'id', autoIncrement : false});
+		};
+		// caso de que la BBDD se abra OK
+		dataBase.onsuccess = function (e) {
+			console.log('Base de datos cargada correctamente');	
+			// bajar en la estructura de la BBDD hasta llegar a nivel de índice. 
+			// en active se mete la BBDD
+			var active = dataBase.result;
+			// En data se inicia la transacción que permite acceder a los datos
+			var data = active.transaction("uiElements", "readonly");
+			// En object se mete el resultado de la transacción
+			var object = data.objectStore("uiElements");
+			// en getAllKeyRequest se mete el array con todos los valores del índice 
+			var getAllKeyRequest = object.getAllKeys();
+			// caso de que se obtengan los valores de los índices OK
+			getAllKeyRequest.onsuccess = function (e){
+				// Se recorre el array de uiElements creándolos si existen en el DOM
+				var elementoPesistencia = getAllKeyRequest.result;
+				for ( c=0; c < elementoPesistencia.length; c++){
+					//console.log(elementoPesistencia[c]);
+					setUiElement(elementoPesistencia[c]);
+				}
+			}
+			// caso de que la BBDD se abra KO
+			getAllKeyRequest.onerror = function (e){
+				consle.log('Error al recuperar uiElements');
+			}
+		};
+		// caso de que se obtengan los valores de los índices KO
+		dataBase.onerror = function (e)  {
+			console.log('Error cargando la base de datos');
+		};
+		
     }
 
 	/**
