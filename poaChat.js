@@ -5,7 +5,8 @@ function PoaChat(){
 	var owner = "poa";							//Propietario del elemento
 	var service = "chat";						//Servicio
 	var instanceName = "poaChat";				//Nombre de la instancia del elemento en el DOM
-	var currentStatus = "chatCreado";				//Guarda el estado actual de la encuesta. 
+	var info = {};								//Cualquier información del elemento que tenga que estar disponible
+	var currentStatus = "chatCreado";			//Guarda el estado actual de la encuesta. 
 	var statusSet = ["chatCreado","modalSolicitudLanzado","modalSolicitudCerrado","modalConversacionLanzado","modalConversacionCerrado"]; //Array de posibles estados del elemento emergente
 	/* INTEGRADOR - FIN VARIABLES */
 
@@ -96,6 +97,20 @@ function PoaChat(){
 	*/ 
 	this.getInstanceName = function(){
 		return instanceName;
+	}
+
+	/**
+	* Devuelve objeto con informacion útil del elemento
+	*/ 
+	this.getInfo = function(){
+		return info;
+	}
+
+	/**
+	* Incluye informacion útil del elemento
+	*/ 
+	this.setInfo = function(extraInfo){
+		info = extraInfo;
 	}
 
 	//PARTE PRIVADA

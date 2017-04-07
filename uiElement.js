@@ -2,7 +2,7 @@
 * @fileoverview UIElement - Integrador
 *
 * @author POA Development Team
-* @version 1.37
+* @version 1.38
 */
 
 function uiElement(instance){ 
@@ -22,6 +22,8 @@ function uiElement(instance){
 	var statusSet= instance.getStatusSet(); 
 	//Nombre del objeto original
 	var instanceName = "";
+	//Informacion adicional
+	var extraInfo = {};
 
 	//Array de reglas asociadas al uiElement
 	//var rules = [];
@@ -117,6 +119,12 @@ function uiElement(instance){
 	}
 	this.setInstanceName = function(instance){
 		instanceName = instance;
+	}
+	this.getExtraInfo = function(){
+		return extraInfo;
+	}
+	this.setExtraInfo = function(info){
+		extraInfo = info;
 	}
 	this.getCurrentStatus = function(){
 		return currentStatus;
