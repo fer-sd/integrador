@@ -30,7 +30,7 @@ function uiElementSet(){
 	actionSet[6]="if (currentStatus == myStatus[6]) {console.log('Modal minimizado cerrado - Version encuesta CSI: '+instance.getVersion());}";
 	//Acciones POA chat
 	actionSet[7]="if (currentStatus == myStatus[0]) console.log('Chat creado - Estado: '+ instance.getCurrentStatus());";
-	actionSet[8]="if (currentStatus == myStatus[1]) {console.log('Modal solicitud de chat lanzado - Estado: '+ instance.getCurrentStatus());}";
+	actionSet[8]="if (currentStatus == myStatus[1]) {console.log('Modal solicitud de chat lanzado - Estado: '+ instance.getCurrentStatus());if (integrador.getUiElement('csi-encuesta').getCurrentStatus()=='modalInicialLanzado')setTimeout(function(){ instance.cerrarModalSolicitud();console.log('Modal solicitud de chat cerrado por Integrador');}, 3000);}";
 	actionSet[9]="if (currentStatus == myStatus[2]) {console.log('Modal solicitud de chat cerrado - Estado: '+ instance.getCurrentStatus());}";
 	actionSet[10]="if (currentStatus == myStatus[3]) {console.log('Modal conversación de chat lanzado - Estado: '+ instance.getCurrentStatus());}";
 	actionSet[11]="if (currentStatus == myStatus[4]) {console.log('Modal conversación de chat cerrado - Estado: '+ instance.getCurrentStatus());}";

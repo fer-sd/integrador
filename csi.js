@@ -1667,7 +1667,7 @@ if (typeof integrador == "object")
 	integrador.elementReady("encuestaCSI");
 else
 	//Depuración
-	//console.log("Error: el objeto integrador no está instanciado en el DOM");
+	console.log("Error: el objeto integrador no está instanciado en el DOM");
 /* INTEGRADOR - FIN TRIGGER INSTANCIACIÓN ELEMENTO */
 
 

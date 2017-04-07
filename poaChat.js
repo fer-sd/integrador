@@ -50,12 +50,30 @@ function PoaChat(){
 		});
 	}
 
+	this.cerrarModalSolicitud = function(){
+		$("#modalSolicitud").modal('hide');
+		$("#modalSolicitud").on('hide.bs.modal', function (e) {
+			/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
+			setStatus("modalSolicitudCerrado");
+			/* INTEGRADOR - FIN CAMBIO DE ESTADO */
+		});
+	}
+
 	this.lanzarModalConversacion = function(){
 		$("body").append(modalConversacion);
 		$("#modalConversacion").modal('show');
 		/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 		setStatus("modalConversacionLanzado");
 		/* INTEGRADOR - FIN CAMBIO DE ESTADO */
+		$( "#modalConversacion" ).on('hide.bs.modal', function (e) {
+		/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
+		setStatus("modalConversacionCerrado");
+		/* INTEGRADOR - FIN CAMBIO DE ESTADO */
+		});
+	}
+
+	this.cerrarModalConversacion = function(){
+		$("#modalConversacion").modal('hide');
 		$( "#modalConversacion" ).on('hide.bs.modal', function (e) {
 		/* INTEGRADOR - INICIO CAMBIO DE ESTADO */
 		setStatus("modalConversacionCerrado");
