@@ -2,7 +2,7 @@
 * @fileoverview UIElementSet - Integrador
 *
 * @author POA Development Team
-* @version 1.41
+* @version 2.0
 */
 
 function uiElementSet(){
@@ -14,77 +14,10 @@ function uiElementSet(){
     //Array con los uiElements instanciados
     var uiElements = [];
 
-    //Array de acciones
-	var actionSet = [];
+    //Instanciación del manejador de reglas (único para el uiElementSet)
+    var rulesManager = new rulesManager();
 
-	//Rellenamos el array (esta acción se debe incluir en un método aparte). 
-	
-	/** SACAR ESTA OPERACIÓN FUERA DEL uiElementSet **/
-	//Acciones Encuesta CSI
-	actionSet[0]="if (currentStatus == myStatus[0]) console.log('Encuesta creada - Version encuesta CSI: '+instance.getVersion());";
-	actionSet[1]="if (currentStatus == myStatus[1]) {console.log('Modal encuesta lanzado - Version encuesta CSI: '+instance.getVersion());$('.usabilla_live_button_container').css('display','none');console.log('Moquillo encuesta Usabilla cerrado por Integrador');setTimeout(function(){instance.cerrarModalEncuesta();console.log('Modal encuesta cerrado por Integrador');}, 3000);}";
-	actionSet[2]="if (currentStatus == myStatus[2]) {console.log('Modal encuesta cerrado - Version encuesta CSI: '+instance.getVersion());}";
-	actionSet[3]="if (currentStatus == myStatus[3]) {console.log('Modal inicial lanzado - Version encuesta CSI: '+instance.getVersion());setTimeout(function(){instance.cerrarModalInicial();console.log('Modal inicial cerrado por Integrador');}, 3000);}";
-	actionSet[4]="if (currentStatus == myStatus[4]) {console.log('Modal inicial cerrado - Version encuesta CSI: '+instance.getVersion());}";
-	actionSet[5]="if (currentStatus == myStatus[5]) {console.log('Modal minimizado lanzado - Version encuesta CSI: '+instance.getVersion());}";
-	actionSet[6]="if (currentStatus == myStatus[6]) {console.log('Modal minimizado cerrado - Version encuesta CSI: '+instance.getVersion());}";
-	//Acciones POA chat
-	actionSet[7]="if (currentStatus == myStatus[0]) console.log('Chat creado - Estado: '+ instance.getCurrentStatus());";
-	actionSet[8]="if (currentStatus == myStatus[1]) {console.log('Modal solicitud de chat lanzado - Estado: '+ instance.getCurrentStatus());if (integrador.getUiElement('csi-encuesta').getCurrentStatus()=='modalInicialLanzado')setTimeout(function(){ instance.cerrarModalSolicitud();console.log('Modal solicitud de chat cerrado por Integrador');}, 3000);}";
-	actionSet[9]="if (currentStatus == myStatus[2]) {console.log('Modal solicitud de chat cerrado - Estado: '+ instance.getCurrentStatus());}";
-	actionSet[10]="if (currentStatus == myStatus[3]) {console.log('Modal conversación de chat lanzado - Estado: '+ instance.getCurrentStatus());}";
-	actionSet[11]="if (currentStatus == myStatus[4]) {console.log('Modal conversación de chat cerrado - Estado: '+ instance.getCurrentStatus());}";
-	
 	/***** Métodos privados ******/
-
-	/**
-	* Método que asocia un id de uiElement con un set de funciones a ejecutar en cada estado
-	* @param id {String} id del uiElement que se desea obtener (proveedor-servicio)
- 	* @return: functionsArray {object}. Array de funciones a ejecutar por el uiElement. Undefined si hay error
-	*/
-	var actionsSwitcher = function(id){
-		try{
-			switch (id){
-				case "csi-encuesta":
-					//Llamaos a generador de array de acciones con las posiciones de las acciones seleccionadas
-					return actionsArrayGenerator([0,1,2,3,4,5,6]);	
-					break;
-				
-				case "poa-chat":
-					return actionsArrayGenerator([7,8,9,10,11]);
-					break;
-
-				/**
-				case "tealium-login":
-					return actionsArrayGenerator([]);
-					break;
-				case:
-					break;
-				**/
-				default:
-					//Comportamiento por defecto
-			}
-		}
-		catch (e){
-			//Depuración
-			console.log(e)
-			return undefined;
-		}
-	}
-
-	/**
-	* Inserta acciones seleccionadas en el array de acciones del uiElement
-	* @param selectedActions {object} Array que contiene las posiciones de las acciones seleccionadas en el array actionSet[]
- 	* @return myActionsArray {object} Array con las funciones seleccionadas
-	*/
-	var actionsArrayGenerator = function(selectedActions){
-		var myActionsArray = [];
-			for (c=0 ; c<selectedActions.length; c++){
-				var currentAction = actionSet[(selectedActions[c])];
-				myActionsArray.push(currentAction);
-			}
-	    return myActionsArray;
-	}
 
 	/**
 	* Inicializa base de datos del integrador para usar indexeddb
@@ -116,21 +49,21 @@ function uiElementSet(){
 	        var active = dataBase.result;
 	        var data = active.transaction("uiElements", "readwrite");
 	        var object = data.objectStore("uiElements");
-	        //Recuperamos uiElemento del UiElementSet en base a la id
-	        var myUiElement = integrador.getUiElement(id);
+	        //Recuperamos uiElement del UiElementSet
+	        var myUiElement = this.getUiElement(id);
 
 	        //Los datos del uiElement tienen que ser guardados como Strings
+	        //FALTA GUARDAR ESTADO ASOCIADO AL UIELEMENT (SI LO HUBIESE)
 	        var request = object.put({
 	            'owner' : myUiElement.getOwner(),
 	            'service' : myUiElement.getService(),
 	            'id' : myUiElement.getId(),
-	            'currentStatus' : myUiElement.getCurrentStatus(),
+	            'internalStatus' : myUiElement.getInternalStatus(),
+	            'status' : myUiElement.getStatus(),
 	            'statusSet' : myUiElement.getStatusSet().toString(),
-	            'instanceName' : myUiElement.getInstanceName(),
-	            'extraInfo'	: myUiElement.getExtraInfo().toString(),
-	            'actions' : myUiElement.getActions().toString(),
-	            'currentInternalStatus' : myUiElement.getCurrentInternalStatus(),
-	            'actionsFunction' : myUiElement.getActionsFunction().toString()
+	            'possibleActions' : myUiElement.getPossibleActions().toString(),
+	            'instanceRef' : myUiElement.getInstanceRef(),
+	            'extraInfo'	: myUiElement.getExtraInfo().toString()
 	        });
 
 	        request.onerror = function (e) {
@@ -166,18 +99,18 @@ function uiElementSet(){
 				    	//Creaciónn del uiElement
 				    	var myUiElement = new uiElement(myInstance);
 				    	//Restauración de atributos del uiElement desde la BBDD en su formato original
-				    	myUiElement.setOwner(result.owner);
-				    	myUiElement.setService(result.service);
+	            		myUiElement.setOwner(result.owner);
+	            		myUiElement.setService(result.service);
 				    	myUiElement.setId(result.owner,result.service);
-				    	myUiElement.setCurrentStatus(result.currentStatus);
-				    	myUiElement.setExtraInfo(result.extraInfo);
-				    	myUiElement.setStatus(result.statusSet.split(","));
-				    	myUiElement.setInstanceName(result.instanceName);
-				    	myUiElement.setCurrentInternalStatus(result.currentInternalStatus);
-				    	//Añadir reglas
+				    	myUiElement.setInternalStatus(result.internalStatus);
+				    	myUiElement.setStatus(result.status);
+				    	myUiElement.setStatusSet(result.statusSet);
+					    myUiElement.setPossibleActions(result.possibleActions);			    	
+					    myUiElement.setInstanceRef(result.instanceRef);	
+					    myUiElement.setExtraInfo(result.extraInfo);	
 
-				    	//Asignar acciones
-				    	myUiElement.setActions(actionsSwitcher(result.id));
+				    	//Recuperar estado asociado al uiElement (si lo hubiera)
+
 						 //Añadir elemento restaurado al uiElementSet
 						uiElements.push(myUiElement);
 
@@ -221,12 +154,8 @@ function uiElementSet(){
 		    	myUiElement.setInstanceName(instanceName);
 		    	//Asignación de información extra
 		    	myUiElement.setExtraInfo(myInstance.getInfo());
-
 		    	//Añadir reglas
 
-		    	//Asignar acciones
-		    	myUiElement.setActions(actionsSwitcher(myUiElement.getId()));
-				 //Añadir elemento al set
 				uiElements.push(myUiElement);
 
 				return true;
@@ -244,10 +173,32 @@ function uiElementSet(){
 	}
 
 	/**
+	Método para eliminar un uiElement identificado por su id pasada como parámetro
+	* @param id {String} Cadena con el nombre del id del uiElement que se desea eliminar (proveedor-servicio)
+	* @return {boolean} Si existe, elimina el uiElement. Si no existe o hay algún error, devuelve false
+	*/
+    var removeUiElement = function(id){
+    	try{
+	    	for (c=0 ; c<uiElements.length; c++){
+	            if (uiElements[c].getId() == id){
+	            	uiElements.splice(c, 1);
+	            	return true;
+	            }
+	        }
+			return false;
+		}
+		catch (e){
+			//Depuración
+			console.log(e);
+			return false;
+		}
+    }
+
+	/**
     * Método que invoca a la función suscripción del integrador al uiElement            
     * @param suscriptionFunction {String} Cadena con la llamada explícita a la función de suscripción
  	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
-    */
+   
     var suscriptionRequest = function(suscriptionFunction){
     	try{	    	
 	       //Ejecuta la suscripción pasando como parámetro la función de acciones
@@ -261,6 +212,7 @@ function uiElementSet(){
 	    	return false;
 	    }	
 	}
+	 */
 
 	/**
     * Método inicial  
@@ -282,7 +234,7 @@ function uiElementSet(){
     * @param id {String} Cadena con la id del uiElement al que se quiere suscribir Integrador
     * @param suscriptionFunction {String} Cadena con el nombre de la función de suscripción
  	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
-	*/
+	
 	this.setSuscription = function(id,suscriptionFunction){
 		try{
 			//recuperamos uiElement asociado a la id recibida
@@ -291,17 +243,14 @@ function uiElementSet(){
     		var myInstanceName = myUiElement.getInstanceName();
     		//creamos token con la función de suscripción (instancia.metodo())	
 	    	var mySuscriptionFunction = myInstanceName+'.'+suscriptionFunction;
-	    	//recuperamos las acciones seleccionadas asociadas al uiElement
-	    	var myActions = myUiElement.getActionsFunction();
 	    	//Comprueba que la instancia existe y la función de suscripción existe en la clase asociada a dicha instancia
-	 		//Comprueba que la función de acciones es una función
-	        if (typeof(eval(myActions))=="function" && typeof(eval(mySuscriptionFunction))=="function"){
+	        if (typeof(eval(mySuscriptionFunction))=="function"){
 	        	//Creamos token de llamada a la suscripción
-		        var mySuscriptionToken = mySuscriptionFunction+'('+myActions+')';
+		        //var mySuscriptionToken = mySuscriptionFunction+'('+myActions+')';
 		        //Ejecutamos la llamada
 		        if (suscriptionRequest(mySuscriptionToken)){
 		        	//Si la suscripción se realiza correctamente, cambiamos estado del uiElemento a "on"
-		        	myUiElement.setCurrentInternalStatus("on");
+		        	//myUiElement.setCurrentInternalStatus("on");
 		        	return true;
 		        }
 		        else{ 
@@ -322,11 +271,12 @@ function uiElementSet(){
 	    	return false;
 	    }
 	}
+	*/
 
 	/**
 	* Método para extraer un uiElement pasado como parámetro
 	* @param id {String} Cadena con el nombre del id del uiElement que se desea obtener (proveedor-servicio)
-	* @return {object} Si existe, devuelve el uiElement. Si no existe o hay algún error, devuelve undefined
+	* @return uiElement {object} Si existe, devuelve el uiElement. Si no existe o hay algún error, devuelve undefined
 	*/
 	this.getUiElement = function(id){
 		try{
@@ -343,35 +293,9 @@ function uiElementSet(){
 		}	
 	}
 
-	/**
-	Método para eliminar un uiElement identificado por su id pasada como parámetro
-	* @param id {String} Cadena con el nombre del id del uiElement que se desea eliminar (proveedor-servicio)
-	* @return {boolean} Si existe, elimina el uiElement. Si no existe o hay algún error, devuelve false
-	*/
-    this.removeUiElement = function(id){
-    	try{
-	    	for (c=0 ; c<uiElements.length; c++){
-	            if (uiElements[c].getId() == id){
-	            	uiElements.splice(c, 1);
-	            	return true;
-	            }
-	        }
-			return false;
-		}
-		catch (e){
-			//Depuración
-			console.log(e);
-			return false;
-		}
-    }
 
-	/**
-	* Devuelve el número de uiElements que contiene el uiElementSet
- 	* @return {Integer} Número de uiElements que contiene actualmente el uiElementSet
-	*/
-	this.getUiElementSetSize = function(){
-		return uiElements.length;
-	}
+
+
 
 	this.getUiElementSet = function(){
 		return uiElements;

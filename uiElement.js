@@ -2,85 +2,52 @@
 * @fileoverview UIElement - Integrador
 *
 * @author POA Development Team
-* @version 1.38
+* @version 2.0
 */
 
-function uiElement(instance){ 
+function uiElement(){ 
 	/***** PARTE PRIVADA ******/
 
 	/***** Variables privadas ******/
 
 	//Propietario del elemento 
-	var owner = instance.getOwner().toLowerCase();
+	var owner = ;
 	//Servicio del propietario sobre el que se va a actuar
-	var service = instance.getService().toLowerCase();
+	var service = ; 
 	//ID elemento 
 	var id = owner+'-'+service;
-	//Estado actual
-	var currentStatus = instance.getCurrentStatus();
-	//Set de posibles estados
-	var statusSet= instance.getStatusSet(); 
-	//Nombre del objeto original
-	var instanceName = "";
+	//Estado interno del uiElement (on/off), por defecto: on
+	var internalStatus = "on";
+	//Estado actual del elemento externo. Por defecto debería ser "created"
+	var status = ;
+	//Array de nombres de posibles estados para el elemento externo
+	var statusSet= ; 
+	//Array de posibles acciones (normalizar set)
+	var possibleActions = ;
+	//Puntero al objeto instanciado
+	var instanceRef;
 	//Informacion adicional
 	var extraInfo = {};
-
-	//Array de reglas asociadas al uiElement
-	//var rules = [];
-
-	//Array de acciones seleccionadas
-	var actions = [];
-	
-	//Array de posibles estados propios. "on" -> suscrito. "off"->no suscrito. "error" -> se produjo algún error en la suscripción
-	var internalStatus= ["on","off","error"];
-	//Estado interno actual. Por defecto desactivado. Cambia según resultado de la suscripción. Depende de internalStatus[]
-	var currentInternalStatus = "off";
 
 
 	/***** Métodos privados ******/
 
 	/**
-    * Método que genera la función acciones seleccionadas previamente.
-    * Se cargan las acciones asociadas al estado correspondiente de la instancia del uiElement en el DOM  
-    * El integrador debe pasar esta función como parámetro al realizar la suscripción al uiElement          
-    * @param currentStatus {String} Estado actual de la instancia del elemento externo
-    * @param instance {Object} instanciaición en el DOM de la clase del uiElement al que se está suscrito
-  	* @return {boolean} Si se realiza correctamente la operación, devuelve true, en caso contrario, false
-    */
-	var actionsFunction = function(currentStatus, instance){
-		try{
-			//Recuperamos id del uiElement
-			var myId = instance.getOwner()+"-"+instance.getService();
-			//Recuperamos el uiElement pasando su id
-			if (typeof integrador == "object"){
-				var myUiElement	= integrador.getUiElement(myId);
-			}
-			else{
-				//Depuración
-				console.log("Error: el objeto integrador no está instanciado en el DOM");
-				return false;
-			}
+	* Crea un nuevo estado para el uiElement
+	* @param 
+ 	* @return
+	*/
+	var createStatus() = function(){
 
-			//Array de funciones a ejecutar
-			var myActions = myUiElement.getActions();
-			//Recuperamos array de posibles estados
-			var myStatus = myUiElement.getStatusSet();
+	}
 
-			//Ejecutar array de funciones
-			for (var i=0; i<myActions.length; i++)
-				//Ejecuta cada acción
-	   			eval(myActions[i]);
-			//Cambio de estado del uiElement
-		    console.log("Estado antes: "+myUiElement.getCurrentStatus());
-		    myUiElement.setCurrentStatus(currentStatus);
-		    console.log("Estado después: "+myUiElement.getCurrentStatus());
-		    return true;
-		}
-		catch (e){
-			//Depuración
-			console.log(e);
-			return false;
-		}	
+	/**
+	* Elimina un estado definido para un uiElement
+	* @param 
+ 	* @return
+	*/
+	var removeStatus() = function(){
+
 	}
 	
 	/***** PARTE PÚBLICA ******/
@@ -89,13 +56,6 @@ function uiElement(instance){
 
 	/***** Métodos públicos ******/
 
-	this.getId = function(){
-		return id;
-	}
-	this.setId = function(owner,service){
-		//se concatena propietario y servicio
-		id = owner.toLowerCase()+'-'+service.toLowerCase();
-	}
 	this.getOwner = function(){
 		return owner;
 	}
@@ -108,17 +68,42 @@ function uiElement(instance){
 	this.setService = function(service){
 		service = this.service;
 	}
+	this.getId = function(){
+		return id;
+	}
+	this.setId = function(){
+		//se concatena propietario y servicio
+		id = owner.toLowerCase()+'-'+service.toLowerCase();
+	}
+	this.getInternalStatus = function(){
+		return internalStatus;
+	}
+	this.setInternalStatus = function(status){
+		internalStatus = this.status;
+	}	
+	this.getStatus = function(){
+		return status;
+	}
+	this.setStatus = function(currentStatus){
+		status = this.currentStatus;
+	}
 	this.getStatusSet = function(){
 		return statusSet;
 	}
 	this.setStatusSet = function(statusSet){
 		statusSet = this.statusSet;
 	}
-	this.getInstanceName = function(){
-		return instanceName;
+	this.getPossibleActions = function(){
+		return possibleActions;
 	}
-	this.setInstanceName = function(instance){
-		instanceName = instance;
+	this.setPossibleActions = function(possibleActionsSet){
+		possibleActions = possibleActionsSet;
+	}
+	this.getInstanceRef = function(){
+		return instanceRef;
+	}
+	this.setInstanceRef = function(reference){
+		instanceRef = reference;
 	}
 	this.getExtraInfo = function(){
 		return extraInfo;
@@ -126,35 +111,4 @@ function uiElement(instance){
 	this.setExtraInfo = function(info){
 		extraInfo = info;
 	}
-	this.getCurrentStatus = function(){
-		return currentStatus;
-	}
-	this.setCurrentStatus = function(myStatus){
-		//Hay que usar myStatus (no this.myStatus) para que se evalue correctamente
-		currentStatus = myStatus;
-		//Reevaluar reglas
-	}
-	this.getCurrentInternalStatus = function(){
-		return currentInternalStatus;
-	}
-	this.setCurrentInternalStatus = function(myStatus){
-		currentInternalStatus = myStatus;
-	}
-	this.setActions = function(myActions){
-		actions = myActions;
-	}	
-	this.getActions = function(){
-		return actions;
-	}
-	this.getActionsFunction = function(){
-		return actionsFunction;
-	}
-	/*
-	this.getRules = function(){
-		return rules;
-	}
-	this.addRule = function(rule){
-		rules.push(rule);
-	}
-	*/
 };
